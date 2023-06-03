@@ -1,0 +1,12 @@
+Jogador 1: Azul
+Posicao piao 1: 30
+Posicao piao 2: 40
+Posicao piao 3: 20
+Posicao piao 4: 10
+
+Jogador 2: Vermelho
+Posicao piao 1: 30
+Posicao piao 2: 40
+Posicao piao 3: 20
+Posicao piao 4: 0
+
