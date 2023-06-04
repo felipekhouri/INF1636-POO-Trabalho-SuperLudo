@@ -23,9 +23,9 @@ public class Model {
 		//2. o move gera captura -> se capturar gera PawnCaptured, e deve receber qual pião foi capturado e atualizar a view
 		//3. o move cria barreira -> se criar gera Barrier, atualizar a view
 		//Simulando 
-		Tile tileStart = tiles[0];
-		Tile tileEnd = tiles[dice];
-		notifyObservers(tileStart, tileEnd);
+		// Tile tileStart = tiles[0];
+		// Tile tileEnd = tiles[dice];
+		// notifyObservers(tileStart, tileEnd);
 		return true;
 		
 	}

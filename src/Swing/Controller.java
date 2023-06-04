@@ -22,15 +22,20 @@ public class Controller implements Observer {
 	private Set<Rectangle2D.Double> tiles;
 
 	
-	public Controller(PrimFrame view, Model model) {
-		this.view = view;
+	public Controller() {
+
+		this.view = new PrimFrame(new BoardPanelMouseListener(this)); ;
 		view.addDiceListener(new DiceListener());
 		
 		boardPanel = view.getBoardPanel();
-        boardPanel.addMouseListener(new BoardPanelMouseListener());
+        // boardPanel.addMouseListener();
         
-        this.model = model;
+        this.model = new Model();
         this.model.addObserver(this);
+
+		view.setTitle("Minha Primeira GUI"); 
+		view.setVisible(true);
+		view.setSize(1000, 800);
 
 	}
 	
@@ -45,6 +50,7 @@ public class Controller implements Observer {
 		        dice = Controller.rollDice();
 		        view.dicePanel.lancarDado(dice);	
 		        onPlay = true;
+				System.out.println("Dice Rolled!");
 		        
 		        //configurar jogador
 		        if (dice != 6){
@@ -54,7 +60,7 @@ public class Controller implements Observer {
 			}
 			
 			catch(Exception ex) {
-				System.out.println(ex.getMessage());
+				System.out.println("EXCEPTION -> " + ex.getMessage());
 	            System.exit(1);
 
 			}
@@ -62,24 +68,7 @@ public class Controller implements Observer {
 		}
 	}
 	
-	//implementar o clique no tile ao inves do pawn
-	private class BoardPanelMouseListener extends MouseAdapter {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-    		//todas as tiles na view
-        	tiles = boardPanel.getTiles();
-        	for (Rectangle2D.Double tile: tiles) {
-        		if (tile.contains(e.getX(),e.getY())) {
-        			if (onPlay) {
-        				//se o tile tiver piao da cor do jogador então significa
-        				if (model.checkTile(e.getX(),e.getY(), dice, player)) {;
-        					onPlay = false;
-        				}
-        			}
-        		}
-        	}
-        }
-    }
+
 
 	
 	private static int rollDice() {
@@ -101,7 +90,7 @@ public class Controller implements Observer {
 		// TODO Auto-generated method stub
 		
 		//devolveu tile, significa que é para desenhar piao na tela.
-		if (arg  instanceof Tile[]) {
+		if (arg instanceof Tile[]) {
 			//setting up tile representation
 			Tile tile = (Tile) arg;
 			TileType type = TileType.empty;
@@ -126,6 +115,7 @@ public class Controller implements Observer {
 				}
 			}
 			TileRepresentation rep = new TileRepresentation(pawnColors,type,positionXY);
+			boardPanel.updateView(rep);
 			//view.updateview();
 			
 			//pegar posição
@@ -134,14 +124,50 @@ public class Controller implements Observer {
 		}
 	}
 
-	
+	public Set<Rectangle2D.Double> getTiles() {
+    	return this.view.getBoardPanel().getTiles();
+	}
 
-	
-	//fazer fun;cào
-        
-	
+	public boolean isOnPlay() {
+		return onPlay;
+	}
 
-}
+	public void setOnPlay(boolean onPlay) {
+		this.onPlay = onPlay;
+	}
+
+	public int getDice() {
+		return dice;
+	}
+
+	public void setDice(int dice) {
+		this.dice = dice;
+	}
+
+	public Color getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Color player) {
+		this.player = player;
+	}
+
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+	}
+
+		
+
+		
+		//fazer fun;cào
+			
+		
+
+	}
 
 /*
  * ### O que a View pede ao Controller

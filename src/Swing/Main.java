@@ -1,17 +1,12 @@
 package Swing;
-
+import Model.*;
 
 public class Main {
 
 	public static void main(String[] args) {
-		PrimFrame f=new PrimFrame(); 
-		Model model = new Model();
-		Controller controller = new Controller(f,model);
-    	System.out.println("Tapped");
 
-		f.setTitle("Minha Primeira GUI"); 
-		f.setVisible(true);
-		f.setSize(1000, 800);
+		Controller controller = new Controller();
+
 //		Tile t = new Tile();
 		
 	} 

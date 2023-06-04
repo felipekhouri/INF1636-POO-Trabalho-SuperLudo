@@ -29,18 +29,16 @@ public class DicePanel extends JPanel {
     }
     
     public void createPlayerRect(Color player) {
-    	try {
-    	rect = new Rectangle2D.Double(0, 0, image.getWidth(), image.getHeight());
-    	}
-    	catch (Exception ex) {
-			System.out.println(ex.getMessage());
-            System.exit(1);
-
-    	}
-    	playerColor = player;
+    try {
+        rect = new Rectangle2D.Double(0, 0, image.getWidth(), image.getHeight());
+        playerColor = player;
         repaint(); //renderizar 
-
+    } catch (Exception ex) {
+        System.out.println(ex.getMessage());
+        System.exit(1);
     }
+}
+
 
     @Override
     protected void paintComponent(Graphics g) {

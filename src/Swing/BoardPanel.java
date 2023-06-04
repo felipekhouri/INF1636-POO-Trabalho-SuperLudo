@@ -14,13 +14,20 @@ public class BoardPanel extends JPanel {
 
 	private PawnEllipse[] pawns;
 	private Set<Rectangle2D.Double> allTiles  = new HashSet<Rectangle2D.Double>(); 
+	Graphics2D g2d;
 
+    private MouseListener listener; // Corrigido para MouseListener
+
+    public BoardPanel(MouseListener listener) { // Corrigido para receber MouseListener
+        this.listener = listener;
+        addMouseListener(listener);
+    }
 	
 	@Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Graphics2D g2d = (Graphics2D) g;
+        this.g2d = (Graphics2D) g;
 
         // Desenha o fundo do tabuleiro
         g2d.setColor(Color.WHITE);
@@ -104,7 +111,24 @@ public class BoardPanel extends JPanel {
         pawns[2] = new PawnEllipse(500,100,drawPawn(Color.BLUE,500,100,g2d),Color.BLUE);
         pawns[3] = new PawnEllipse(300,100,drawPawn(Color.YELLOW,300,100,g2d),Color.YELLOW);
         
-        System.out.print(allTiles.size());
+        System.out.println("allTiles.size ->" + allTiles.size());
+    }
+    
+     public void updateView(Object data) {
+    	if(data instanceof TileRepresentation) {
+    		TileRepresentation tileRep = (TileRepresentation) data;
+    		if (tileRep.type == TileType.empty) return;
+    		else if(tileRep.type == TileType.single) {
+    			drawPawn(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1],g2d);
+    		}
+    		else if(tileRep.type == TileType.twoDifferentColor) {
+    			drawExitDoublePawn(tileRep.pawns[0],tileRep.pawns[1],tileRep.positionXY[0], tileRep.positionXY[1], g2d);
+    		}
+    		else {
+    			drawBarrier(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1],g2d);
+    		}
+    		
+    	}
     }
 	
 	
@@ -371,15 +395,15 @@ public class BoardPanel extends JPanel {
 
     
     
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Ludo Board");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.add(new BoardPanel());
-            frame.setSize(770, 800);
-            frame.setVisible(true);
-        });
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> {
+    //         JFrame frame = new JFrame("Ludo Board");
+    //         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    //         frame.add(new BoardPanel());
+    //         frame.setSize(770, 800);
+    //         frame.setVisible(true);
+    //     });
+    // }
 }
 
 
