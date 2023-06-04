@@ -24,11 +24,11 @@ public class Controller implements Observer {
 	
 	public Controller() {
 
-		this.view = new PrimFrame(new BoardPanelMouseListener(this)); ;
+		this.view = new PrimFrame(); ;
 		view.addDiceListener(new DiceListener());
 		
 		boardPanel = view.getBoardPanel();
-        // boardPanel.addMouseListener();
+        boardPanel.addMouseListener(new BoardPanelMouseListener(this));
         
         this.model = new Model();
         this.model.addObserver(this);
@@ -88,16 +88,18 @@ public class Controller implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		
 		//devolveu tile, significa que é para desenhar piao na tela.
+		System.out.println("arg ->" + arg.getClass());
 		if (arg instanceof Tile[]) {
+			Tile[] tiles = (Tile[]) arg;
+			System.out.println("qualquer coisa ai");
 			//setting up tile representation
-			Tile tile = (Tile) arg;
+			Tile tile = tiles[0];
 			TileType type = TileType.empty;
 			int positionXY[]= new int[2];
 			//posicao simulate
-			positionXY[0] = 100;
-			positionXY[1] = 200;
+			positionXY[0] = 300;
+			positionXY[1] = 300;
 			Color[] pawnColors = new Color[tile.numPawns];
 
 			

@@ -4,7 +4,7 @@ import java.awt.Color;
 //Model tile mock
 
 public class Tile {
-	public static Tile tiles[];
+	public static Tile[] tiles;
 	public Pawns currPawns[];
 	int numPawns;
 	boolean isBarrier;

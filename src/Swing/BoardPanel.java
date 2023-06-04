@@ -13,21 +13,22 @@ import java.util.*;
 public class BoardPanel extends JPanel {
 
 	private PawnEllipse[] pawns;
-	private Set<Rectangle2D.Double> allTiles  = new HashSet<Rectangle2D.Double>(); 
+	private Set<Rectangle2D.Double> allTiles; 
 	Graphics2D g2d;
 
     private MouseListener listener; // Corrigido para MouseListener
 
-    public BoardPanel(MouseListener listener) { // Corrigido para receber MouseListener
-        this.listener = listener;
-        addMouseListener(listener);
-    }
+    // public BoardPanel(MouseListener listener) { // Corrigido para receber MouseListener
+    //     this.listener = listener;
+    //     addMouseListener(listener);
+    // }
 	
 	@Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         this.g2d = (Graphics2D) g;
+		this.allTiles = new HashSet<Rectangle2D.Double>();
 
         // Desenha o fundo do tabuleiro
         g2d.setColor(Color.WHITE);
@@ -48,6 +49,7 @@ public class BoardPanel extends JPanel {
         drawCellsVertical(g2d,cellSize,topLeft.getMaxX(),topLeft.getMinY(), true, false, Color.RED);
         
         drawEndCellsHorizontal(g2d,cellSize,topLeft.getMinX(),topLeft.getMaxY()+cellSize,true,Color.RED);
+		System.out.println("draw 1");
 
         
         Rectangle2D.Double topRight = new Rectangle2D.Double(getWidth()-squareSize, 0, squareSize, squareSize);
@@ -58,6 +60,7 @@ public class BoardPanel extends JPanel {
 
         drawEndCellsVertical(g2d,cellSize,topRight.getMinX()-2*cellSize,topRight.getMinY(),true,Color.GREEN);
 
+		System.out.println("draw 2");
         
         Rectangle2D.Double bottomLeft = new Rectangle2D.Double(0, getHeight()-squareSize, squareSize, squareSize);
         drawRectangle(bottomLeft,g2d,Color.BLUE);
@@ -67,6 +70,8 @@ public class BoardPanel extends JPanel {
         
         drawEndCellsVertical(g2d,cellSize,bottomLeft.getMaxX()+cellSize,bottomLeft.getMinY(),false,Color.BLUE);
 
+		System.out.println("draw 3");
+
         
         Rectangle2D.Double bottomRight = new Rectangle2D.Double(getWidth()-squareSize, getHeight()-squareSize, squareSize, squareSize);
         drawRectangle(bottomRight,g2d,Color.YELLOW);
@@ -75,6 +80,8 @@ public class BoardPanel extends JPanel {
         drawCellsVertical(g2d,cellSize,bottomRight.getMinX()-cellSize,bottomRight.getMinY(), false, false, Color.YELLOW);
        
         drawEndCellsHorizontal(g2d,cellSize,bottomRight.getMinX(),bottomRight.getMinY()-2*cellSize,false,Color.YELLOW);
+
+		System.out.println("draw 4");
 
 
         //MARK: Draw triangles
@@ -115,20 +122,27 @@ public class BoardPanel extends JPanel {
     }
     
      public void updateView(Object data) {
-    	if(data instanceof TileRepresentation) {
+		System.out.println("ENTROU AQUI");
+    	// if(data instanceof TileRepresentation) {
     		TileRepresentation tileRep = (TileRepresentation) data;
-    		if (tileRep.type == TileType.empty) return;
+    		if (tileRep.type == TileType.empty) {
+				System.out.println("RETURN");
+				return;
+			}
     		else if(tileRep.type == TileType.single) {
+				System.out.println("tileRep.type == TileType.single");
     			drawPawn(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1],g2d);
     		}
     		else if(tileRep.type == TileType.twoDifferentColor) {
+				System.out.println("tileRep.type == TileType.twoDifferentColor");
     			drawExitDoublePawn(tileRep.pawns[0],tileRep.pawns[1],tileRep.positionXY[0], tileRep.positionXY[1], g2d);
     		}
     		else {
+				System.out.println("tileRep.type == TileType.twoDifferentColor");
     			drawBarrier(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1],g2d);
     		}
     		
-    	}
+    	// }
     }
 	
 	

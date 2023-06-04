@@ -21,11 +21,11 @@ public class BoardPanelMouseListener extends MouseAdapter {
         Color player = controller.getPlayer();
         Model model = controller.getModel();
 
-        System.out.println("tiles -> " + tiles.size());
         if (tiles != null) {
             for (Rectangle2D.Double tile : tiles) {
                 if (tile.contains(e.getX(), e.getY())) {
                     if (controller.isOnPlay()) {
+                        System.out.println("is PLAY");
                         // se o tile tiver piao da cor do jogador então significa
                         if (model.checkTile(e.getX(), e.getY(), dice, player)) {
                             controller.setOnPlay(false);

@@ -23,13 +23,13 @@ public class PrimFrame extends JFrame {
 
 	
 
-	public PrimFrame(BoardPanelMouseListener listener) {
+	public PrimFrame() {
 		setTitle("LUDAO");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1200, 900);
 		setLayout(new BorderLayout());
 
-		boardPanel = new BoardPanel(listener);
+		boardPanel = new BoardPanel();
 		boardPanel.setPreferredSize(new Dimension(770, 800));
 
 		// Configuração do painel do menu

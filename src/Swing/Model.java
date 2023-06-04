@@ -10,9 +10,9 @@ public class Model {
 	
 
 	public Model() {
-		tiles = Tile.tiles;
+		Tile tileAux = new Tile();
 		observers = new ArrayList<>();
-		
+		tiles = tileAux.tiles;
 	}
 	public boolean checkTile(double posX, double posY, int dice, Color player) {
 		//funcao de converter de x,y para indice
@@ -23,9 +23,11 @@ public class Model {
 		//2. o move gera captura -> se capturar gera PawnCaptured, e deve receber qual pião foi capturado e atualizar a view
 		//3. o move cria barreira -> se criar gera Barrier, atualizar a view
 		//Simulando 
-		// Tile tileStart = tiles[0];
-		// Tile tileEnd = tiles[dice];
-		// notifyObservers(tileStart, tileEnd);
+		Tile tileStart = tiles[0];
+		Tile tileEnd = tiles[dice];
+		System.out.println("tileStart ->" + tileStart.positionIndex);
+		System.out.println("tileEnd ->" + tileEnd.positionIndex);
+		notifyObservers(tileStart, tileEnd);
 		return true;
 		
 	}
@@ -39,11 +41,11 @@ public class Model {
 	    observers.remove(observer);
 	}
 
-	public void notifyObservers(Object... args) {
-        for (Observer observer : observers) {
-            observer.update(null,args);
-        }
-    }
+	public void notifyObservers(Tile... tile) {
+		for (Observer observer : observers) {
+			observer.update(null, tile);
+		}
+	}
 
 
 }
