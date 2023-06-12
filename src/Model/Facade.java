@@ -1,11 +1,8 @@
 package Model;
-import java.util.Random;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
+import Swing.Observed;
 
-public class Facade {
+public class Facade implements Observed {
 	
 	private Facade() {
 		int i = 0;
@@ -16,6 +13,7 @@ public class Facade {
 			i++;
 		}
 		currPlayer = players[0];
+		observers = new ArrayList<>();
 	}
 	
 	//Singleton
@@ -29,6 +27,8 @@ public class Facade {
 	protected static Facade getTestInstance() {
 		return new Facade();
 	}
+	//implementacao de observable
+	private List<Swing.Observer> observers;
 	
 	//gerenciamento do jogador atual
 	private Player currPlayer;
@@ -52,7 +52,7 @@ public class Facade {
 	//indica se o jogador ja rolou o dado antes de jogar
 	private boolean hasRolledDice = false;
 	//todas as tiles em que há peoes
-	private Set<Tile> ocupiedTiles = new HashSet<Tile>();
+	private Set<Tile> occupiedTiles = new HashSet<Tile>();
 	
 	//metodos auxiliares
 	/*
@@ -68,8 +68,7 @@ public class Facade {
 		int count = 0;
 		for(Color c: Color.values()) {
 			currTile = new ExitTile(c);
-			array = getXY(new PawnPosition(count, false));
-			currTile.setXY(array);
+			currTile.position = new PawnPosition(count, false);
 			exitTiles.put(c, (ExitTile)currTile);
 			if (finalTile != null)
 				finalTile.setNextTile(currTile);
@@ -84,16 +83,14 @@ public class Facade {
 			
 			for (int i = 0; i < 8; i++) {
 				currTile.setNextTile(new RegularTile());
-				array = getXY(new PawnPosition(count, false));
-				currTile.setXY(array);
+				currTile.position = new PawnPosition(count, false);
 				currTile = currTile.getNextTile();
 			}
 			currTile.setNextTile(new ShelterTile());
 			currTile = currTile.getNextTile();
 			for (int i = 0; i < 3; i++) {
 				currTile.setNextTile(new RegularTile());
-				array = getXY(new PawnPosition(count, false));
-				currTile.setXY(array);
+				currTile.position = new PawnPosition(count, false);
 				currTile = currTile.getNextTile();
 			}
 			finalTile = currTile;
@@ -161,11 +158,11 @@ public class Facade {
 		return null;
 	}
 	
-	protected void updateOcupiedTiles() {
+	protected void updateOccupiedTiles() {
 		for(Player player : players) {
 			for(Pawn pawn : player.pawns) {
-				if(!pawn.getIsInInitialTile() && !ocupiedTiles.contains(pawn.currTile)) {
-					ocupiedTiles.add(pawn.currTile);
+				if(!pawn.getIsInInitialTile() && !occupiedTiles.contains(pawn.currTile)) {
+					occupiedTiles.add(pawn.currTile);
 				}
 			}
 		}
@@ -274,8 +271,8 @@ public class Facade {
 		return this.anchor;
 	}
 	
-	Set<Tile> getOcupiedTiles() {
-		return ocupiedTiles;
+	Set<Tile> getOccupiedTiles() {
+		return occupiedTiles;
 	}
 	
 	//metodos publicos, na ordem em que sao usado pelo jogador
@@ -365,5 +362,22 @@ public class Facade {
 		}
 		nextPlayer();
 		return;
+	}
+
+	//implementacao de observable
+	@Override
+	public void addObserver(Swing.Observer observer) {
+	    observers.add(observer);
+	}
+
+	@Override
+	public void removeObserver(Swing.Observer observer) {
+	    observers.remove(observer);
+	}
+
+	public void notifyObservers() {
+		for (Swing.Observer observer : observers) {
+			observer.notify(this);
+		}
 	}
 }

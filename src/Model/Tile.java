@@ -3,14 +3,14 @@ package Model;
 import java.util.*;
 import java.util.Set;
 
-abstract class Tile {
+abstract public class Tile {
 	protected Set<Pawn> currPawns = new HashSet<Pawn>();
 	protected Tile nextTile = null;
 	protected Tile previousTile = null;
 	protected int numPawns = 0;
 	protected boolean isBarrier = false;
-	
-	public double x,y;
+	protected PawnPosition position;
+	// public double x,y;
 	
 	public Tile() {
 
@@ -26,12 +26,12 @@ abstract class Tile {
 		return this.previousTile;
 	}
 	
-	public void setXY(double[] coordinates) {
-		if(coordinates.length == 2) {
-			x = coordinates[0];
-			y = coordinates[1];
-		}
-	}
+	// public void setXY(double[] coordinates) {
+	// 	if(coordinates.length == 2) {
+	// 		x = coordinates[0];
+	// 		y = coordinates[1];
+	// 	}
+	// }
 	
 	// retornar tile em array
 	public Pawn[] getCurrPawnsAsArray() {
@@ -86,6 +86,10 @@ abstract class Tile {
 			}
 		}
 		return false;
+	}
+
+	public int getNumPawns() {
+		return numPawns;
 	}
 
 	protected void setNextTile(Tile t) {

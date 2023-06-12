@@ -9,17 +9,19 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import Model.*;
 
 import javax.imageio.ImageIO;
 
 public class Controller implements Observer {
 	private PrimFrame view;
-	private Model model;
+	private Facade model;
 	private BoardPanel boardPanel;
 	private boolean onPlay; 
 	private int dice;
 	private Color player;
 	private Set<Rectangle2D.Double> tiles;
+	private Set<TileRepresentation> occupiedTiles;
 
 	
 	public Controller() {
@@ -30,8 +32,9 @@ public class Controller implements Observer {
 		boardPanel = view.getBoardPanel();
         boardPanel.addMouseListener(new BoardPanelMouseListener(this));
         
-        this.model = new Model();
+        this.model = Facade.getInstance();
         this.model.addObserver(this);
+		this.occupiedTiles = new HashSet<TileRepresentation>();
 
 		view.setTitle("Minha Primeira GUI"); 
 		view.setVisible(true);
@@ -68,9 +71,26 @@ public class Controller implements Observer {
 		}
 	}
 	
+	private void updateOccupiedTiles() {
+		occupiedTiles = new HashSet<TileRepresentation>();
+		for(Tile t: model.getOccupiedTiles()) {
 
+		}
+	}
 
-	
+	private Color convertToAWT(Model.Color color) {
+		switch (color) {
+			case red:
+			return Color.RED;
+			case green:
+			return Color.GREEN;
+			case yellow:
+			return Color.YELLOW;
+			default:
+			return Color.BLUE;
+		}
+	}
+
 	private static int rollDice() {
 		Random random = new Random();
         int randomNumber = random.nextInt(6) + 1;
@@ -85,8 +105,29 @@ public class Controller implements Observer {
 	    return colors[index];
 	  }
 
+	private TileRepresentation makeTileRepresentation(Tile tile) {
+		Color pawnColors[] = new Color[tile.getNumPawns()];
+		TileType tileType;
+		if (tile.getNumPawns() >= 2) {
+			if (tile.getCurrPawnsAsArray()[0].getColor() == tile.getCurrPawnsAsArray()[1].getColor()) {
+				tileType = TileType.twoSameColor;
+			} else {
+				tileType = TileType.twoDifferentColor;
+			}
+		} else if (tile.getNumPawns() == 1) {
+			tileType = TileType.single;
+		} else {
+			tileType = TileType.empty;
+		}
+
+		for (int i = 0; i < tile.getCurrPawnsAsArray().length; i++) {
+			pawnColors[i] = convertToAWT( tile.getCurrPawnsAsArray()[i].getColor() );
+		}
+		return new TileRepresentation(pawnColors, tileType, null)
+	}
+
 	@Override
-	public void update(Observable o, Object arg) {
+	public void update(Observed arg) {
 		// TODO Auto-generated method stub
 		//devolveu tile, significa que é para desenhar piao na tela.
 		System.out.println("arg ->" + arg.getClass());
@@ -100,13 +141,14 @@ public class Controller implements Observer {
 			//posicao simulate
 			positionXY[0] = 300;
 			positionXY[1] = 300;
-			Color[] pawnColors = new Color[tile.numPawns];
+			Color[] pawnColors = new Color[tile.getNumPawns()];
 
 			
-			if (tile.numPawns == 1) type = TileType.single;
-			else if (tile.numPawns == 2) {
-				for (int i = 0; i<tile.numPawns;i++) {
-					pawnColors[i] = tile.currPawns[i].color;
+			if (tile.getNumPawns() == 1) type = TileType.single;
+			else if (tile.getNumPawns() == 2) {
+				Pawn pawnArray[] = tile.getCurrPawnsAsArray();
+				for (int i = 0; i<tile.getNumPawns();i++) {
+					pawnColors[i] = convertToPawnArray[i].getColor();
 				}
 				
 				if (pawnColors[0].equals(pawnColors[1])) {
@@ -154,11 +196,11 @@ public class Controller implements Observer {
 		this.player = player;
 	}
 
-	public Model getModel() {
+	public Facade getModel() {
 		return model;
 	}
 
-	public void setModel(Model model) {
+	public void setModel(Facade model) {
 		this.model = model;
 	}
 

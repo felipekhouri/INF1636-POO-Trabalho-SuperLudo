@@ -1,6 +1,6 @@
 package Model;
 
-class Pawn {
+public class Pawn {
 	private Color color;
 	private boolean isInInitialTile = true;
 	private boolean isInLastTile = false;
@@ -11,7 +11,7 @@ class Pawn {
 		currTile = tile;
 	}
 	
-	public void move(int nTiles) 
+	protected void move(int nTiles) 
 	throws PawnInFinalTileException, PawnCapturedException, MoveImpossibleException 
 	{	
 		Tile auxTile = currTile;
