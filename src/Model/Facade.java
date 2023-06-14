@@ -271,7 +271,7 @@ public class Facade implements Observed {
 		return this.anchor;
 	}
 	
-	Set<Tile> getOccupiedTiles() {
+	public Set<Tile> getOccupiedTiles() {
 		return occupiedTiles;
 	}
 	
@@ -329,7 +329,7 @@ public class Facade implements Observed {
 		return nTiles;
 	}
 	
-	public void play(PawnPosition selectedPawnPosition) {
+	private void play(PawnPosition selectedPawnPosition) {
 		if ((!hasRolledDice) && (!canPlayAgain)) {
 			//TODO: mudar isso por uma mensagem na tela
 			System.out.println("voce precisa rolar o dado antes de jogar");
@@ -362,6 +362,10 @@ public class Facade implements Observed {
 		}
 		nextPlayer();
 		return;
+	}
+
+	public void play(double x, double y) {
+		play(getPosition(x, y));
 	}
 
 	//implementacao de observable

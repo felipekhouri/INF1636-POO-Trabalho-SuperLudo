@@ -1,6 +1,5 @@
 package Swing;
 
-
 import java.awt.Color;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
@@ -13,11 +12,10 @@ import Model.*;
 
 import javax.imageio.ImageIO;
 
-public class Controller implements Observer {
+public class Controller implements Swing.Observer {
 	private PrimFrame view;
 	private Facade model;
 	private BoardPanel boardPanel;
-	private boolean onPlay; 
 	private int dice;
 	private Color player;
 	private Set<Rectangle2D.Double> tiles;
@@ -50,9 +48,8 @@ public class Controller implements Observer {
 			//configurar dado 
 			
 			try {
-		        dice = Controller.rollDice();
+		        dice = model.rollDice();
 		        view.dicePanel.lancarDado(dice);	
-		        onPlay = true;
 				System.out.println("Dice Rolled!");
 		        
 		        //configurar jogador
@@ -90,12 +87,6 @@ public class Controller implements Observer {
 			return Color.BLUE;
 		}
 	}
-
-	private static int rollDice() {
-		Random random = new Random();
-        int randomNumber = random.nextInt(6) + 1;
-		return randomNumber;
-	}
 	
 	private static Color nextPlayer() {
 		Random random = new Random();
@@ -123,61 +114,53 @@ public class Controller implements Observer {
 		for (int i = 0; i < tile.getCurrPawnsAsArray().length; i++) {
 			pawnColors[i] = convertToAWT( tile.getCurrPawnsAsArray()[i].getColor() );
 		}
-		return new TileRepresentation(pawnColors, tileType, null)
+		return new TileRepresentation(pawnColors, tileType, null);
 	}
 
-	@Override
-	public void update(Observed arg) {
-		// TODO Auto-generated method stub
-		//devolveu tile, significa que é para desenhar piao na tela.
-		System.out.println("arg ->" + arg.getClass());
-		if (arg instanceof Tile[]) {
-			Tile[] tiles = (Tile[]) arg;
-			System.out.println("qualquer coisa ai");
-			//setting up tile representation
-			Tile tile = tiles[0];
-			TileType type = TileType.empty;
-			int positionXY[]= new int[2];
-			//posicao simulate
-			positionXY[0] = 300;
-			positionXY[1] = 300;
-			Color[] pawnColors = new Color[tile.getNumPawns()];
+	// @Override
+	// public void update(Observed arg) {
+	// 	// TODO Auto-generated method stub
+	// 	//devolveu tile, significa que é para desenhar piao na tela.
+	// 	System.out.println("arg ->" + arg.getClass());
+	// 	if (!(arg instanceof Tile[])) {
+	// 		Tile[] tiles = (Tile[]) arg;
+	// 		System.out.println("qualquer coisa ai");
+	// 		//setting up tile representation
+	// 		Tile tile = tiles[0];
+	// 		TileType type = TileType.empty;
+	// 		int positionXY[]= new int[2];
+	// 		//posicao simulate
+	// 		positionXY[0] = 300;
+	// 		positionXY[1] = 300;
+	// 		Color[] pawnColors = new Color[tile.getNumPawns()];
 
 			
-			if (tile.getNumPawns() == 1) type = TileType.single;
-			else if (tile.getNumPawns() == 2) {
-				Pawn pawnArray[] = tile.getCurrPawnsAsArray();
-				for (int i = 0; i<tile.getNumPawns();i++) {
-					pawnColors[i] = convertToPawnArray[i].getColor();
-				}
+	// 		if (tile.getNumPawns() == 1) type = TileType.single;
+	// 		else if (tile.getNumPawns() == 2) {
+	// 			Pawn pawnArray[] = tile.getCurrPawnsAsArray();
+	// 			for (int i = 0; i<tile.getNumPawns();i++) {
+	// 				pawnColors[i] = convertToPawnArray[i].getColor();
+	// 			}
 				
-				if (pawnColors[0].equals(pawnColors[1])) {
-					type = TileType.twoSameColor;
-				}
-				else {
-					type = TileType.twoDifferentColor;
-				}
-			}
-			TileRepresentation rep = new TileRepresentation(pawnColors,type,positionXY);
-			boardPanel.updateView(rep);
-			//view.updateview();
+	// 			if (pawnColors[0].equals(pawnColors[1])) {
+	// 				type = TileType.twoSameColor;
+	// 			}
+	// 			else {
+	// 				type = TileType.twoDifferentColor;
+	// 			}
+	// 		}
+	// 		TileRepresentation rep = new TileRepresentation(pawnColors,type,positionXY);
+	// 		boardPanel.updateView(rep);
+	// 		//view.updateview();
 			
-			//pegar posição
+	// 		//pegar posição
 			
 			
-		}
-	}
+	// 	}
+	// }
 
 	public Set<Rectangle2D.Double> getTiles() {
     	return this.view.getBoardPanel().getTiles();
-	}
-
-	public boolean isOnPlay() {
-		return onPlay;
-	}
-
-	public void setOnPlay(boolean onPlay) {
-		this.onPlay = onPlay;
 	}
 
 	public int getDice() {
@@ -204,7 +187,14 @@ public class Controller implements Observer {
 		this.model = model;
 	}
 
+	@Override
+	public void notify(Observed observed) {
 		
+	}
+
+	public void play(double x, double y) {
+		model.play(x, y);
+	}	
 
 		
 		//fazer fun;cào
