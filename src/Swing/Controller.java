@@ -48,15 +48,7 @@ public class Controller implements Swing.Observer {
 			//configurar dado 
 			
 			try {
-		        dice = model.rollDice();
-		        view.dicePanel.lancarDado(dice);	
-				System.out.println("Dice Rolled!");
-		        
-		        //configurar jogador
-		        if (dice != 6){
-		        	player = Controller.nextPlayer();
-			        view.dicePanel.createPlayerRect(player);
-		        }
+		        dice = model.rollDice();	
 			}
 			
 			catch(Exception ex) {
@@ -71,7 +63,7 @@ public class Controller implements Swing.Observer {
 	private void updateOccupiedTiles() {
 		occupiedTiles = new HashSet<TileRepresentation>();
 		for(Tile t: model.getOccupiedTiles()) {
-
+			occupiedTiles.add(makeTileRepresentation(t));
 		}
 	}
 
@@ -189,10 +181,14 @@ public class Controller implements Swing.Observer {
 
 	@Override
 	public void notify(Observed observed) {
-		
+		updateOccupiedTiles();
+		player = convertToAWT(model.getCurrPlayerColor());
+		view.dicePanel.lancarDado(model.getNTiles());
+		view.dicePanel.createPlayerRect(player);
 	}
 
 	public void play(double x, double y) {
+		System.out.println("tentou jogar nas posicoes");
 		model.play(x, y);
 	}	
 

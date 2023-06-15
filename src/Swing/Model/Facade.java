@@ -14,7 +14,6 @@ public class Facade implements Observed {
 		}
 		currPlayer = players[0];
 		observers = new ArrayList<>();
-
 	}
 	
 	//Singleton
@@ -140,7 +139,6 @@ public class Facade implements Observed {
 	}
 
 	public PawnPosition getPosition(double x, double y) {
-		System.out.printf("recebi um toque nas posicoes %f e %f.\n", x, y);
 		double tileX, tileY, result[];
 		PawnPosition position;
 		for (int i = 0; i < 52; i++) {
@@ -151,7 +149,7 @@ public class Facade implements Observed {
 				return position;
 		}
 		for(int i = 0; i < 20; i++) {
-			position = new PawnPosition(i, true);
+			position = new PawnPosition(i, false);
 			result = getXY(position);
 			tileX = result[0]; tileY = result[1];
 			if ( (y >= tileY) && (y <= tileY + tileSize) && (x >= tileX) && (x <= tileX + tileSize) )
@@ -176,33 +174,33 @@ public class Facade implements Observed {
 		xAnchor = tileSize;
 		yAnchor = tileSize * 6;
 		int position = pawnPosition.getNumber();
-		if (!pawnPosition.getIsInFinalTiles()) {
+		if (pawnPosition.getIsInFinalTiles()) {
 			if(position < 5)
 				return new double[] {xAnchor + position*tileSize, yAnchor};
 			else if(position < 11) 
-				return new double[] {xAnchor + 5*tileSize, yAnchor - (position - 4)*tileSize };
+				return new double[] {xAnchor + 5*tileSize, yAnchor + (position - 4)*tileSize };
 			else if(position == 11)
-				return new double[] {xAnchor + 6*tileSize, 0 };
+				return new double[] {xAnchor + 6*tileSize, yAnchor + 6*tileSize };
 			else if(position < 18)
-				return new double[] {xAnchor + 7*tileSize, yAnchor - 6*tileSize + (position-12)*tileSize};
+				return new double[] {xAnchor + 7*tileSize, yAnchor + 6*tileSize - (position-12)*tileSize};
 			else if(position < 24)
 				return new double[] {xAnchor + 7*tileSize + (position - 17)*tileSize, yAnchor};
 			else if(position == 24)
-				return new double[] {xAnchor + 13*tileSize, yAnchor + tileSize};
+				return new double[] {xAnchor + 13*tileSize, yAnchor - tileSize};
 			else if(position < 31)
-				return new double[] {xAnchor + 13*tileSize - (position-25)*tileSize, yAnchor + 2*tileSize};
+				return new double[] {xAnchor + 13*tileSize - (position-25)*tileSize, yAnchor - 2*tileSize};
 			else if(position < 37)
-				return new double[] {xAnchor + 7*tileSize, yAnchor + 2*tileSize + (position-30)*tileSize};
+				return new double[] {xAnchor + 7*tileSize, yAnchor - 2*tileSize - (position-30)*tileSize};
 			else if(position == 37)
-				return new double[] {xAnchor + 6*tileSize, yAnchor + 8*tileSize};
+				return new double[] {xAnchor + 6*tileSize, yAnchor - 8*tileSize};
 			else if(position < 44)
-				return new double[] {xAnchor + 5*tileSize, yAnchor + 8*tileSize - (position-38)*tileSize};
+				return new double[] {xAnchor + 5*tileSize, yAnchor - 8*tileSize + (position-38)*tileSize};
 			else if (position < 50)
-				return new double[] {xAnchor + 4*tileSize - (position-44)*tileSize, yAnchor + 2*tileSize};
+				return new double[] {xAnchor + 4*tileSize - (position-44)*tileSize, yAnchor - 2*tileSize};
 			else if (position == 50)
-				return new double[] {xAnchor - tileSize, yAnchor + tileSize};
+				return new double[] {xAnchor - tileSize, yAnchor - 2*tileSize};
 			else if (position == 51)
-				return new double[] {xAnchor - tileSize, yAnchor};
+				return new double[] {xAnchor - tileSize, yAnchor - tileSize};
 		} else {
 			if(position < 5) {
 				return new double[] {xAnchor + tileSize*position, yAnchor + tileSize};
@@ -211,20 +209,12 @@ public class Facade implements Observed {
 			} else if (position < 15) {
 				return new double[] {xAnchor + 12*tileSize - tileSize*(position-10), yAnchor + tileSize};
 			} else {
-				return new double[] {xAnchor + 6 * tileSize, yAnchor + 7*tileSize - (position-15)*tileSize};
+				return new double[] {xAnchor + 6 * tileSize, yAnchor - 7*tileSize + (position-15)*tileSize};
 			}
 		}
 		return new double[] {xAnchor, yAnchor};
 	}
 	
-public Color getCurrPlayerColor() {
-	return currPlayer.getColor();
-}
-
-public int getNTiles() {
-	return nTiles;
-}
-
 	/*
 	 * nextPlayer atualiza os valores das variáveis para o próximo jogador
 	 * Não vamos testar esta função, pois é muito simples.
@@ -292,8 +282,6 @@ public int getNTiles() {
 	 */
 	public int rollDice() 
 	{
-		System.out.printf("dado atual: %d\n", lastDiceRoll);
-		System.out.printf("pode rolar o dado: %s\n", hasRolledDice ? "nao" : "sim");
 		if(canPlayAgain || hasRolledDice) {
 			//TODO: subsituir por um aviso para o jogador
 			System.out.println("Voce precisa selecionar um peao para jogar antes de rolar o dado novamente");
@@ -308,14 +296,11 @@ public int getNTiles() {
 				wasAbleToStartPawn = currPlayer.startPawn();
 			} catch (PawnCapturedException e) {
 				canPlayAgain = true;
-				hasRolledDice = true;
 				nTiles = 6;
-				notifyObservers();
 				return 5;
 			} finally {
 				if (wasAbleToStartPawn) {
 					nextPlayer();
-					notifyObservers();
 					return 5;
 				}
 			}
@@ -326,7 +311,6 @@ public int getNTiles() {
 			if (currPlayer.getNStraight6() == 3) {
 				lastPlayedPawn.sendToInitial();
 				nextPlayer();
-				notifyObservers();
 				return nTiles;
 			} else {
 				canPlayAgain = true;
@@ -336,9 +320,7 @@ public int getNTiles() {
 		try {
 			currPlayer.evaluateMoves(nTiles);
 		} catch (NoMovesAvailableException e) {
-			System.out.println("nenhum movimento disponivel");
 			nextPlayer();
-			notifyObservers();
 			return nTiles;
 		} catch (BarrierFoundException e) {
 			availablePawns = e.getPawnsInBarrier();
@@ -348,7 +330,6 @@ public int getNTiles() {
 	}
 	
 	private void play(PawnPosition selectedPawnPosition) {
-		System.out.printf("jogou na posicao %d%s\n", selectedPawnPosition.getNumber(), selectedPawnPosition.getIsInFinalTiles() ? ", final" : "");
 		if ((!hasRolledDice) && (!canPlayAgain)) {
 			//TODO: mudar isso por uma mensagem na tela
 			System.out.println("voce precisa rolar o dado antes de jogar");
@@ -384,12 +365,7 @@ public int getNTiles() {
 	}
 
 	public void play(double x, double y) {
-		PawnPosition position = getPosition(x, y);
-		if (position == null) {
-			System.out.println("O toque nao gerou uma posicao valida.");
-			return;
-		}
-		play(position);
+		play(getPosition(x, y));
 	}
 
 	//implementacao de observable
