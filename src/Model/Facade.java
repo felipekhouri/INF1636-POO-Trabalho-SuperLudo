@@ -10,6 +10,7 @@ public class Facade implements Observed {
 		makeNewBoard();
 		for(Color c: Color.values()) {
 			players[i] = new Player(c, exitTiles.get(c));
+			System.out.printf("tile de saids do jogador: %d\n", exitTiles.get(c).getPosition().getNumber());
 			i++;
 		}
 		currPlayer = players[0];
@@ -404,6 +405,7 @@ public int getNTiles() {
 	}
 
 	public void notifyObservers() {
+		updateOccupiedTiles();
 		for (Swing.Observer observer : observers) {
 			observer.notify(this);
 		}

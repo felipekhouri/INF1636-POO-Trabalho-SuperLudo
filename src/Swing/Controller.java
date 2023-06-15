@@ -65,6 +65,7 @@ public class Controller implements Swing.Observer {
 		for(Tile t: model.getOccupiedTiles()) {
 			occupiedTiles.add(makeTileRepresentation(t));
 		}
+		System.out.printf("There are %d occupied tiles\n", model.getOccupiedTiles().size());
 	}
 
 	private Color convertToAWT(Model.Color color) {
@@ -89,8 +90,15 @@ public class Controller implements Swing.Observer {
 	  }
 
 	private TileRepresentation makeTileRepresentation(Tile tile) {
+		System.out.printf("peao na posicao %d%s", tile.getPosition().getNumber(), tile.getPosition().getIsInFinalTiles() ? ", reta final" : "");
 		Color pawnColors[] = new Color[tile.getNumPawns()];
 		TileType tileType;
+		int x, y;
+		double[] position;
+		position = model.getXY(tile.getPosition());
+		x = (int)position[0];
+		y = (int)position[1];
+
 		if (tile.getNumPawns() >= 2) {
 			if (tile.getCurrPawnsAsArray()[0].getColor() == tile.getCurrPawnsAsArray()[1].getColor()) {
 				tileType = TileType.twoSameColor;
@@ -106,50 +114,8 @@ public class Controller implements Swing.Observer {
 		for (int i = 0; i < tile.getCurrPawnsAsArray().length; i++) {
 			pawnColors[i] = convertToAWT( tile.getCurrPawnsAsArray()[i].getColor() );
 		}
-		return new TileRepresentation(pawnColors, tileType, null);
+		return new TileRepresentation(pawnColors, tileType, x, y);
 	}
-
-	// @Override
-	// public void update(Observed arg) {
-	// 	// TODO Auto-generated method stub
-	// 	//devolveu tile, significa que é para desenhar piao na tela.
-	// 	System.out.println("arg ->" + arg.getClass());
-	// 	if (!(arg instanceof Tile[])) {
-	// 		Tile[] tiles = (Tile[]) arg;
-	// 		System.out.println("qualquer coisa ai");
-	// 		//setting up tile representation
-	// 		Tile tile = tiles[0];
-	// 		TileType type = TileType.empty;
-	// 		int positionXY[]= new int[2];
-	// 		//posicao simulate
-	// 		positionXY[0] = 300;
-	// 		positionXY[1] = 300;
-	// 		Color[] pawnColors = new Color[tile.getNumPawns()];
-
-			
-	// 		if (tile.getNumPawns() == 1) type = TileType.single;
-	// 		else if (tile.getNumPawns() == 2) {
-	// 			Pawn pawnArray[] = tile.getCurrPawnsAsArray();
-	// 			for (int i = 0; i<tile.getNumPawns();i++) {
-	// 				pawnColors[i] = convertToPawnArray[i].getColor();
-	// 			}
-				
-	// 			if (pawnColors[0].equals(pawnColors[1])) {
-	// 				type = TileType.twoSameColor;
-	// 			}
-	// 			else {
-	// 				type = TileType.twoDifferentColor;
-	// 			}
-	// 		}
-	// 		TileRepresentation rep = new TileRepresentation(pawnColors,type,positionXY);
-	// 		boardPanel.updateView(rep);
-	// 		//view.updateview();
-			
-	// 		//pegar posição
-			
-			
-	// 	}
-	// }
 
 	public Set<Rectangle2D.Double> getTiles() {
     	return this.view.getBoardPanel().getTiles();
@@ -181,16 +147,25 @@ public class Controller implements Swing.Observer {
 
 	@Override
 	public void notify(Observed observed) {
+		System.out.println("I was notified");
 		updateOccupiedTiles();
+		if(!occupiedTiles.isEmpty()) {
+			view.getBoardPanel().setTileRepresentations(occupiedTiles);
+		}
 		player = convertToAWT(model.getCurrPlayerColor());
 		view.dicePanel.lancarDado(model.getNTiles());
 		view.dicePanel.createPlayerRect(player);
+		view.getBoardPanel().repaint();
 	}
 
 	public void play(double x, double y) {
 		System.out.println("tentou jogar nas posicoes");
 		model.play(x, y);
 	}	
+
+	public Set<TileRepresentation> getOccupiedTiles() {
+		return occupiedTiles;
+	}
 
 		
 		//fazer fun;cào

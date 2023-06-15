@@ -15,6 +15,7 @@ public class BoardPanel extends JPanel {
 	private PawnEllipse[] pawns;
 	private Set<Rectangle2D.Double> allTiles; 
 	Graphics2D g2d;
+	private Set<TileRepresentation> tileRepresentations; 
 
     private MouseListener listener; // Corrigido para MouseListener
 
@@ -110,14 +111,21 @@ public class BoardPanel extends JPanel {
         
         
         //MARK: draw pawns in barrier and exit tile
-//        drawBarrier(Color.GREEN,105,105,g2d);
-//        drawExitDoublePawn(Color.RED, Color.GREEN,100,100,g2d);
-        pawns = new PawnEllipse[4];
-        pawns[0] = new PawnEllipse(100,100,drawPawn(Color.GREEN,100,100,g2d),Color.GREEN);
-        pawns[1] = new PawnEllipse(200,100,drawPawn(Color.RED,100,100,g2d),Color.RED);
-        pawns[2] = new PawnEllipse(500,100,drawPawn(Color.BLUE,500,100,g2d),Color.BLUE);
-        pawns[3] = new PawnEllipse(300,100,drawPawn(Color.YELLOW,300,100,g2d),Color.YELLOW);
+    //    drawBarrier(Color.GREEN,105,105,g2d);
+    //    drawExitDoublePawn(Color.RED, Color.GREEN,100,100,g2d);
+        // pawns = new PawnEllipse[4];
+        // pawns[0] = new PawnEllipse(100,100,drawPawn(Color.GREEN,100,100,g2d),Color.GREEN);
+        // pawns[1] = new PawnEllipse(200,100,drawPawn(Color.RED,100,100,g2d),Color.RED);
+        // pawns[2] = new PawnEllipse(500,100,drawPawn(Color.BLUE,500,100,g2d),Color.BLUE);
+        // pawns[3] = new PawnEllipse(300,100,drawPawn(Color.YELLOW,300,100,g2d),Color.YELLOW);
+		// TileRepresentation[] tileRepresentations = controller.getOccupiedTiles();
+		// pawns = new PawnEllipse[tileRepresentations.size()];
+		// for(int i = 0; i < tileRepresentations; i++) {
+		// 	pawns[i] = pawnsRepresentations[i];
+		// }
         
+		drawAllTiles();
+
         System.out.println("allTiles.size ->" + allTiles.size());
     }
     
@@ -160,6 +168,11 @@ public class BoardPanel extends JPanel {
 	
 	public Set<Rectangle2D.Double> getTiles(){
 		return allTiles;
+	}
+
+	//setters
+	void setTileRepresentations(Set<TileRepresentation> newTileRepresentations) {
+		tileRepresentations = newTileRepresentations;
 	}
 	
 //	public Color getColor(Ellipse2D pawn, Graphics2D g2d) {
@@ -407,6 +420,34 @@ public class BoardPanel extends JPanel {
         g2d.fill(circ);
     }
 
+	private void drawAllTiles() {
+		double x, y;
+		Color[] color;
+		System.out.println("rideu");
+		if(tileRepresentations == null) { 
+			System.out.println("recebi null");
+			return; 
+		}
+		for(TileRepresentation representation : tileRepresentations) {
+			if(representation == null) { continue; }
+			x = representation.getX();
+			y = representation.getY();
+			color = representation.getColor();
+			switch (representation.getType()) {
+				case twoSameColor:
+				drawBarrier(color[0], x, y, g2d);
+				case twoDifferentColor:
+				drawExitDoublePawn(color[0], color[1], x, y, g2d);
+				System.out.println("desenhei casa de saida");
+				case single:
+				drawPawn(color[0], x, y, g2d);
+				System.out.println("desenhei casa de saida");
+				default:
+				System.out.println("desenhei foi nada");
+				continue;
+			} 
+		}
+	}
     
     
     // public static void main(String[] args) {

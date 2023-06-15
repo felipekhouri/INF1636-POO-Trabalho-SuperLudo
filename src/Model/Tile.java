@@ -92,6 +92,10 @@ abstract public class Tile {
 		return numPawns;
 	}
 
+	public PawnPosition getPosition() {
+		return position;
+	}
+
 	protected void setNextTile(Tile t) {
 		nextTile = t;
 	}
