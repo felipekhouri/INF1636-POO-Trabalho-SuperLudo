@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 
-class Player {
+public class Player {
 	Pawn[] pawns;
 	private Color color;
 	private ExitTile exitTile;
@@ -37,6 +37,10 @@ class Player {
 	int getNStraight6() {
 		return nStraight6;
 	}
+
+	public Pawn[] getPawns(){
+		return pawns;
+	}
 	
 	public Set<Pawn> evaluateMoves(int nTiles)
 	throws NoMovesAvailableException, BarrierFoundException
@@ -50,9 +54,9 @@ class Player {
 			movesAvailable = movesAvailable || pawnCanMove;
 			if (pawnCanMove) {
 				avaliablePawns.add(p);
-				if ( p.currTile.isBarrier() ) {
+				if ( p.getTile().isBarrier() ) {
 					if (!pawnsInBarrier.contains(p)) {
-						for (Pawn pawnInTile: p.currTile.getCurrPawnsAsArray())
+						for (Pawn pawnInTile: p.getTile().getCurrPawnsAsArray())
 							pawnsInBarrier.add(pawnInTile);
 					}
 				}
