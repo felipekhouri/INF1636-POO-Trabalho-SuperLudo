@@ -10,7 +10,6 @@ public class Facade implements Observed {
 		makeNewBoard();
 		for(Color c: Color.values()) {
 			players[i] = new Player(c, exitTiles.get(c));
-			System.out.printf("tile de saids do jogador: %d\n", exitTiles.get(c).getPosition().getNumber());
 			i++;
 		}
 		currPlayer = players[0];
@@ -44,6 +43,7 @@ public class Facade implements Observed {
 	private Pawn lastPlayedPawn;
 	//classe random para a rolagem do dado
 	private Random rand = new Random();
+	private Scanner scanner = new Scanner(System.in);
 	//anchor é uma referência para a casa de saída vermelha. No sistema de coordenadas, é a "casa número 0" 
 	private Tile anchor;
 	//peoes que podem ser movidos
@@ -61,43 +61,37 @@ public class Facade implements Observed {
 	 * makeNewBoard cria todas as tiles de um tabuleiro, instancia a variável exitTiles e
 	 * instancia a variável anchor
 	 */
-	private void makeNewBoard() 
-	{
-		Tile currTile, firstTile = null, finalTile = null;
-		boolean isFirstRun = true;
+
+	private void makeNewBoard() {
+		Tile currTile;
 		exitTiles = new HashMap<Color, ExitTile>();
-		double[] array;
-		int count = 0;
-		for(Color c: Color.values()) {
-			currTile = new ExitTile(c);
-			currTile.position = new PawnPosition(count, false);
-			exitTiles.put(c, (ExitTile)currTile);
-			if (finalTile != null)
-				finalTile.setNextTile(currTile);
-			
-			if (c == Color.red) 
-				anchor = currTile;
-			
-			if (isFirstRun) {
-				firstTile = currTile;
-				isFirstRun = false;
+		Color color = Color.red;
+		currTile = new ExitTile(color, 0, false);
+		anchor = currTile;
+		exitTiles.put(color, (ExitTile)currTile);
+		for(int position = 1; position < 52; position++) {
+			if (position % 13 == 0) {
+				switch(position) {
+					case 13:
+					color = Color.green;
+					break;
+					case 26:
+					color = Color.yellow;
+					break;
+					default:
+					color = Color.blue;
+					break;
+				}
+				currTile.setNextTile(new ExitTile(color, position, false));
+				exitTiles.put(color, (ExitTile)currTile.getNextTile());
+			} else {
+				currTile.setNextTile(new RegularTile(position, false));
 			}
-			
-			for (int i = 0; i < 8; i++) {
-				currTile.setNextTile(new RegularTile());
-				currTile.position = new PawnPosition(count, false);
-				currTile = currTile.getNextTile();
-			}
-			currTile.setNextTile(new ShelterTile());
 			currTile = currTile.getNextTile();
-			for (int i = 0; i < 3; i++) {
-				currTile.setNextTile(new RegularTile());
-				currTile.position = new PawnPosition(count, false);
-				currTile = currTile.getNextTile();
+			if(position == 51) {
+				currTile.setNextTile(anchor);
 			}
-			finalTile = currTile;
 		}
-		finalTile.setNextTile(firstTile); //aqui, garantimos que a lista encadeada é circular
 	}
 
 	/*
@@ -120,6 +114,7 @@ public class Facade implements Observed {
 				break;
 			case yellow:
 				position += 10;
+				break;
 			case blue:
 				position += 15;
 			}
@@ -129,9 +124,6 @@ public class Facade implements Observed {
 		auxTile = anchor;
 		do {
 			if (auxTile.contains(p)) {
-				if (position == 0) {
-					System.out.println("nem saiu da primeira casa");
-				}
 				return new PawnPosition(position, false);
 			}
 			auxTile = auxTile.getNextTile();
@@ -141,7 +133,6 @@ public class Facade implements Observed {
 	}
 
 	public PawnPosition getPosition(double x, double y) {
-		System.out.printf("recebi um toque nas posicoes %f e %f.\n", x, y);
 		double tileX, tileY, result[];
 		PawnPosition position;
 		for (int i = 0; i < 52; i++) {
@@ -218,13 +209,13 @@ public class Facade implements Observed {
 		return new double[] {xAnchor, yAnchor};
 	}
 	
-public Color getCurrPlayerColor() {
-	return currPlayer.getColor();
-}
+	public Color getCurrPlayerColor() {
+		return currPlayer.getColor();
+	}
 
-public int getNTiles() {
-	return nTiles;
-}
+	public int getNTiles() {
+		return nTiles;
+	}
 
 	/*
 	 * nextPlayer atualiza os valores das variáveis para o próximo jogador
@@ -293,15 +284,20 @@ public int getNTiles() {
 	 */
 	public int rollDice() 
 	{
-		System.out.printf("dado atual: %d\n", lastDiceRoll);
-		System.out.printf("pode rolar o dado: %s\n", hasRolledDice ? "nao" : "sim");
+		System.out.println("estou rodando");
+		System.out.println("Ha " + occupiedTiles.size() + " tiles ocupadas");
 		if(canPlayAgain || hasRolledDice) {
 			//TODO: subsituir por um aviso para o jogador
-			System.out.println("Voce precisa selecionar um peao para jogar antes de rolar o dado novamente");
 			return nTiles;
 		}
-		lastDiceRoll = (rand.nextInt(6) + 1);
-		nTiles = lastDiceRoll;
+		System.out.printf("Digite o dado: ");
+		nTiles = scanner.nextInt();
+		if(nTiles < 0) {
+			nTiles = (rand.nextInt(6) + 1);
+		}
+		System.out.println("O jogador ");
+		printColor(currPlayer.getColor());
+		System.out.println("tirou %d no dado" + nTiles);
 		boolean wasAbleToStartPawn = false;
 		
 		if (nTiles == 5) {
@@ -323,6 +319,9 @@ public int getNTiles() {
 		}
 		
 		if(nTiles == 6) {
+			System.out.printf("O jogador ");
+			printColor(currPlayer.getColor());
+			System.out.println("tirou 6\n");
 			currPlayer.rollSixOnDice();
 			if (currPlayer.getNStraight6() == 3) {
 				lastPlayedPawn.sendToInitial();
@@ -330,14 +329,15 @@ public int getNTiles() {
 				notifyObservers();
 				return nTiles;
 			} else {
+				System.out.println("Pode jogar novamente");
+				hasRolledDice = true;
 				canPlayAgain = true;
 			}
 		}
 		
 		try {
-			currPlayer.evaluateMoves(nTiles);
+			availablePawns = currPlayer.evaluateMoves(nTiles);
 		} catch (NoMovesAvailableException e) {
-			System.out.println("nenhum movimento disponivel");
 			nextPlayer();
 			notifyObservers();
 			return nTiles;
@@ -345,19 +345,31 @@ public int getNTiles() {
 			availablePawns = e.getPawnsInBarrier();
 		}
 		hasRolledDice = true;
+		notifyObservers();
 		return nTiles;
 	}
 	
 	private void play(PawnPosition selectedPawnPosition) {
-		System.out.printf("jogou na posicao %d%s\n", selectedPawnPosition.getNumber(), selectedPawnPosition.getIsInFinalTiles() ? ", final" : "");
+		System.out.println("Funcao play da Facade chamada");
 		if ((!hasRolledDice) && (!canPlayAgain)) {
 			//TODO: mudar isso por uma mensagem na tela
-			System.out.println("voce precisa rolar o dado antes de jogar");
 			return;
 		}
+		if (canPlayAgain) {
+			try {
+			availablePawns = currPlayer.evaluateMoves(nTiles);
+		} catch (NoMovesAvailableException e) {
+			nextPlayer();
+			notifyObservers();
+		} catch (BarrierFoundException e) {
+			availablePawns = e.getPawnsInBarrier();
+		}
+		}
 		PawnPosition tempPawnPosition;
-		Pawn selectedPawn = null;
+		Pawn selectedPawn = null; 
+		System.out.printf("%d\n", selectedPawnPosition.getNumber());
 		for(Pawn pawn : availablePawns) {
+			System.out.println("entro aqui na play papai");
 			tempPawnPosition = getPawnPosition(pawn);
 			if (tempPawnPosition.equals(selectedPawnPosition)) {
 				selectedPawn = pawn;
@@ -377,20 +389,44 @@ public int getNTiles() {
 		} catch (PawnInFinalTileException e) {
 			if(currPlayer.hasWon()) {
 				//TODO: substituir isso por false
-				System.out.println("somebody won the game!!!");
 			}
 		}
 		nextPlayer();
+		notifyObservers();
 		return;
 	}
 
 	public void play(double x, double y) {
 		PawnPosition position = getPosition(x, y);
 		if (position == null) {
-			System.out.println("O toque nao gerou uma posicao valida.");
 			return;
 		}
 		play(position);
+	}
+
+	public void printColor(Color color) {
+		switch(color) {
+			case red:
+			System.out.printf("red ");
+			break;
+			case green:
+			System.out.printf("green ");
+			break;
+			case blue:
+			System.out.printf("blue ");
+			break;
+			case yellow:
+			System.out.printf("yellow ");
+		}
+	}
+
+	public void printAllPawnsOnBoard() {
+		for(Player p : players) {
+			printColor(p.getColor());
+			for (Pawn pawn : p.getPawns()) {
+				System.out.printf("Peao na posicao %d\n", pawn.currTile.getPosition().getNumber());
+			}
+		}
 	}
 
 	//implementacao de observable
@@ -405,6 +441,9 @@ public int getNTiles() {
 	}
 
 	public void notifyObservers() {
+		if (nTiles < 1 || nTiles > 6) {
+			nTiles = 1;
+		}
 		updateOccupiedTiles();
 		for (Swing.Observer observer : observers) {
 			observer.notify(this);

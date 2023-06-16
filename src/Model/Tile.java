@@ -12,8 +12,10 @@ abstract public class Tile {
 	protected PawnPosition position;
 	// public double x,y;
 	
-	public Tile() {
+	public Tile() {}
 
+	public Tile(int position, boolean isInFinalTiles) {
+		this.position = new PawnPosition(position, isInFinalTiles);
 	}
 
 	// getters

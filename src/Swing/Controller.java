@@ -65,7 +65,6 @@ public class Controller implements Swing.Observer {
 		for(Tile t: model.getOccupiedTiles()) {
 			occupiedTiles.add(makeTileRepresentation(t));
 		}
-		System.out.printf("There are %d occupied tiles\n", model.getOccupiedTiles().size());
 	}
 
 	private Color convertToAWT(Model.Color color) {
@@ -90,7 +89,6 @@ public class Controller implements Swing.Observer {
 	  }
 
 	private TileRepresentation makeTileRepresentation(Tile tile) {
-		System.out.printf("peao na posicao %d%s", tile.getPosition().getNumber(), tile.getPosition().getIsInFinalTiles() ? ", reta final" : "");
 		Color pawnColors[] = new Color[tile.getNumPawns()];
 		TileType tileType;
 		int x, y;
@@ -147,7 +145,6 @@ public class Controller implements Swing.Observer {
 
 	@Override
 	public void notify(Observed observed) {
-		System.out.println("I was notified");
 		updateOccupiedTiles();
 		if(!occupiedTiles.isEmpty()) {
 			view.getBoardPanel().setTileRepresentations(occupiedTiles);
@@ -159,7 +156,6 @@ public class Controller implements Swing.Observer {
 	}
 
 	public void play(double x, double y) {
-		System.out.println("tentou jogar nas posicoes");
 		model.play(x, y);
 	}	
 
