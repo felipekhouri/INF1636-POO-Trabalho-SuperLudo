@@ -67,7 +67,6 @@ public class Pawn {
 	public boolean canMove(int nTiles) 
 	{
 		if (isInInitialTile) {
-			System.out.println("Estou na casa inicial");
 			return false;
 		}
 		int tilesMoved = 0;

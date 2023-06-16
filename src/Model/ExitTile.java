@@ -5,6 +5,12 @@ class ExitTile extends Tile{
 	protected Color color;
 	
 	public ExitTile(Color c) {
+		super();
+		color = c;
+	}
+
+	public ExitTile(Color c, int position, boolean isInFinalTiles) {
+		super(position, isInFinalTiles);
 		color = c;
 	}
 	

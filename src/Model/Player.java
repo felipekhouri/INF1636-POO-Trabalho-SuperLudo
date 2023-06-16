@@ -20,6 +20,13 @@ public class Player {
 							new Pawn(color, initialTile)
 						   };
 		exitTile = initialTile;
+		try {
+			if (this.startPawn()) {
+				System.out.println("Peao saiu com sucesso");
+			}
+		} catch (Exception e) {
+				System.out.println("Peao capturado na saida");
+		}
 	}
 	
 	public Color getColor() {
@@ -82,7 +89,6 @@ public class Player {
 		}
 		
 		if (pawnInInitialTile == null) { //nenhum peão está na casa inicial
-			System.out.println("Nenhum disponivel");
 			return false;
 		}
 		
@@ -92,7 +98,6 @@ public class Player {
 				pawnInInitialTile.setIsInInitialTile(false); //aqui, removemos o peão da casa inicial
 			}
 			catch (MoveImpossibleException e) {
-				System.out.println("Movimento Impossivel");
 				return false; //caso addPawn jogue alguma exceção, o movimento não é possível
 			}
 			catch (PawnCapturedException e) {
@@ -123,5 +128,9 @@ public class Player {
 	
 	public void endPlay() {
 		nStraight6 = 0;
+	}
+
+	Pawn[] getPawns() {
+		return pawns;
 	}
 }

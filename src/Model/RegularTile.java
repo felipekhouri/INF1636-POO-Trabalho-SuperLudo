@@ -3,6 +3,12 @@ package Model;
 class RegularTile extends Tile {
 	//repensar 
 	
+	public RegularTile(){}
+	
+	public RegularTile(int position, boolean isInFinalTiles){
+		super(position, isInFinalTiles);
+	}
+
 	@Override
 	public boolean canAddPawn(Pawn p) {
 		if (numPawns == 0 || numPawns == 1) {
