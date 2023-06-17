@@ -53,6 +53,8 @@ public class Facade implements Observed {
 	private boolean canPlayAgain = false;
 	//indica se o jogador ja rolou o dado antes de jogar
 	private boolean hasRolledDice = false;
+	//indica se houve captura na ultima jogada
+	private boolean dontRollDiceAfterSecondPlay = false;
 	//todas as tiles em que há peoes
 	private Set<Tile> occupiedTiles = new HashSet<Tile>();
 	
@@ -84,6 +86,8 @@ public class Facade implements Observed {
 				}
 				currTile.setNextTile(new ExitTile(color, position, false));
 				exitTiles.put(color, (ExitTile)currTile.getNextTile());
+			} else if (position % 13 == 9) {
+				currTile.setNextTile(new ShelterTile(position));
 			} else {
 				currTile.setNextTile(new RegularTile(position, false));
 			}
@@ -237,6 +241,7 @@ public class Facade implements Observed {
 		availablePawns = new HashSet<Pawn>();
 		canPlayAgain = false;
 		hasRolledDice = false;
+		dontRollDiceAfterSecondPlay = false;
 		updateCurrPlayer();
 	}
 	
@@ -306,6 +311,7 @@ public class Facade implements Observed {
 			} catch (PawnCapturedException e) {
 				canPlayAgain = true;
 				hasRolledDice = true;
+				dontRollDiceAfterSecondPlay = true;
 				nTiles = 6;
 				notifyObservers();
 				return 5;
@@ -385,20 +391,31 @@ public class Facade implements Observed {
 		} catch (PawnCapturedException e) {
 			System.out.println("A capture ocurred!");
 			canPlayAgain = true;
+			dontRollDiceAfterSecondPlay = true;
 			nTiles = 6;
 			notifyObservers();
 			return;
 		} catch (PawnInFinalTileException e) {
 			if(currPlayer.hasWon()) {
 				System.out.println("O jogador ghanhou!!");
+				return;
 			}
+			canPlayAgain = true;
+			dontRollDiceAfterSecondPlay = true;
+			nTiles = 6;
+			notifyObservers();
+			return;
 		}
 		lastPlayedPawn = selectedPawn;
 		if(nTiles != 6) {
 			nextPlayer();
 		} else {
-			hasRolledDice = false;
-			canPlayAgain = false;
+			if(dontRollDiceAfterSecondPlay) {
+				nextPlayer();
+			} else {
+				hasRolledDice = false;
+				canPlayAgain = false;
+			}
 		}
 		notifyObservers();
 		return;
