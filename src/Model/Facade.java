@@ -196,11 +196,11 @@ public class Facade implements Observed {
 			else if (position == 51)
 				return new double[] {xAnchor - tileSize, yAnchor};
 		} else {
-			if(position < 5) {
+			if(position < 6) {
 				return new double[] {xAnchor + tileSize*position, yAnchor + tileSize};
-			} else if (position < 10) {
+			} else if (position < 12) {
 				return new double[] {xAnchor + 6*tileSize, yAnchor - 5*tileSize + (position-5)*tileSize};
-			} else if (position < 15) {
+			} else if (position < 18) {
 				return new double[] {xAnchor + 12*tileSize - tileSize*(position-10), yAnchor + tileSize};
 			} else {
 				return new double[] {xAnchor + 6 * tileSize, yAnchor + 7*tileSize - (position-15)*tileSize};
@@ -324,7 +324,8 @@ public class Facade implements Observed {
 			System.out.println(" tirou 6\n");
 			currPlayer.rollSixOnDice();
 			if (currPlayer.getNStraight6() == 3) {
-				lastPlayedPawn.sendToInitial();
+				if(!lastPlayedPawn.getIsInLastTile())
+					lastPlayedPawn.sendToInitial();
 				nextPlayer();
 				notifyObservers();
 				return nTiles;
@@ -374,6 +375,7 @@ public class Facade implements Observed {
 			}
 		}
 		if (selectedPawn == null) {
+			System.out.println("selected pawn nao existe");
 			return;
 		}
 		try {
@@ -388,7 +390,7 @@ public class Facade implements Observed {
 			return;
 		} catch (PawnInFinalTileException e) {
 			if(currPlayer.hasWon()) {
-				//TODO: substituir isso por false
+				System.out.println("O jogador ghanhou!!");
 			}
 		}
 		lastPlayedPawn = selectedPawn;

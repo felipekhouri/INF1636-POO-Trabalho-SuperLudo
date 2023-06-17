@@ -6,19 +6,17 @@ import java.util.Map;
 class FinalTile extends Tile{
 	
 	protected Color color;
+	private boolean isLastTile;
 	
-	public FinalTile(Color c, int num) {
+	public FinalTile(Color c, int num, boolean isLastTile) {
 		color = c;
 		position = new PawnPosition(num, true);
+		this.isLastTile = isLastTile;
 	}
 	
 	//se o next for null é o ultimo
 	public boolean isLastTile() {
-		if (getNextTile() == null) {
-			//the next is the last
-			return true;
-		}
-		return false;
+		return isLastTile;
 	}
 
 	@Override
@@ -43,25 +41,27 @@ class FinalTile extends Tile{
 	static {
 		int increment;
 		FinalTile firstTile, currTile;
+		boolean isLastFinalTile = false;
 		for(Color c: Color.values()) { //vamos criar uma "reta final" para cada cor
 			switch(c) {
 				case red:
 				increment = 0;
 				break;
 				case green:
-				increment = 5;
+				increment = 6;
 				break;
 				case yellow:
-				increment = 10;
+				increment = 12;
 				break;
 				default:
-				increment = 15;
+				increment = 18;
 			}
-			firstTile = new FinalTile(c, increment);
-			currTile = new FinalTile(c, increment + 1);
+			firstTile = new FinalTile(c, increment, false);
+			currTile = new FinalTile(c, increment + 1, false);
 			firstTile.setNextTile(currTile);
 			for(int i = 0; i < 4; i++) {
-				currTile.setNextTile(new FinalTile(c, increment + i + 1));
+				if (i == 3) isLastFinalTile = true;
+				currTile.setNextTile(new FinalTile(c, increment + i + 2, isLastFinalTile));
 				currTile = (FinalTile)currTile.getNextTile();
 			}
 			finalTiles.put(c, firstTile); //definindo a primeira casa da reta final para a cor
