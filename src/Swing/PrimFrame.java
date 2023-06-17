@@ -101,8 +101,12 @@ public class PrimFrame extends JFrame {
     }
 
     public JButton getSaveButton() {
-        return button3;
+		return button3;
     }
+	
+    public JButton getLoadButton() {
+		return button2;
+	}
 
 //	public static void main(String[] args) {
 //		PrimFrame gui = new PrimFrame();

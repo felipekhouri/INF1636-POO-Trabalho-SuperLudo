@@ -110,7 +110,7 @@ public class Facade implements Observed {
 	 * sistema de coordenadas
 	 * do tabuleiro. Este método não será private para que possa ser testado.
 	 */
-	PawnPosition getPawnPosition(Pawn p) {
+	public PawnPosition getPawnPosition(Pawn p) {
 		int position = 0;
 		Tile auxTile;
 		if (p.getTile() instanceof FinalTile) {

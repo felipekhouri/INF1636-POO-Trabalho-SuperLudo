@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Ellipse2D.Double;
 import java.awt.geom.Rectangle2D;
-import java.io.BufferedWriter;
+import java.io.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,6 +45,17 @@ public class Controller implements Swing.Observer {
 				
 			}
 		});
+		view.getLoadButton().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				int resultado = fileChooser.showOpenDialog(null);
+				if (resultado == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					loadInfo(file);
+				}
+			}
+		});
 
 		this.model = Facade.getInstance();
 		this.model.addObserver(this);
@@ -57,28 +68,73 @@ public class Controller implements Swing.Observer {
 	}
 
 	private void saveInfo(File file) {
-		Model.Color currentPlayer = model.getCurrPlayerColor();
-
-		try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-			writer.write("Current Player:" + currentPlayer);
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			Model.Color currentPlayer = model.getCurrPlayerColor();
+			writer.write("Player: " + currentPlayer);
 			writer.newLine();
-			for(Player player : model.getPlayers()){
-				writer.newLine();
-				writer.newLine();
-				writer.write("" + player.getColor());
-
-				for(Pawn pawn : player.getPawns()){
-					writer.newLine();
-					writer.write("" + pawn.getTile().getPosition().getNumber());
+			writer.write("Game State: ");
+			writer.newLine();
+			writer.write("Pawn Positions:");
+			writer.newLine();
+			for (Player player : model.getPlayers()) {
+				for (Pawn pawn : player.getPawns()) {
+					writer.write(model.getPawnPosition(pawn).getNumber() + "/");
+					writer.write(model.getPawnPosition(pawn).getIsInFinalTiles() + ",");
+					
 				}
-				
+				writer.newLine();
 			}
-
 			System.out.println("Informações salvas com sucesso!");
 		} catch (IOException e) {
 			System.err.println("Erro ao salvar as informações: " + e.getMessage());
 		}
 	}
+	
+
+	private void loadInfo(File file) {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+	
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("Player:")) {
+					String player = line.substring(line.indexOf(":") + 1).trim();
+					// Atribui o jogador da vez
+					System.out.println("Player: " + player);
+				} else if (line.startsWith("Game State:")) {
+					String gameState = line.substring(line.indexOf(":") + 1).trim();
+					// Atribui o estado do jogo
+					System.out.println("Game State: " + gameState);
+				} else if (line.equals("Pawn Positions:")) {
+					// Leitura das posições dos peões
+					List<List<Integer>> pawnPositions = new ArrayList<>();
+					for (int i = 0; i < 4; i++) {
+						line = reader.readLine();
+						String[] positions = line.split(",");
+						List<Integer> pawnPositionList = new ArrayList<>();
+						for (String position : positions) {
+							String[] parts = position.split("/");
+							int positionValue = Integer.parseInt(parts[0].trim());
+							boolean isInFinal = Boolean.parseBoolean(parts[1].trim());
+							// Adiciona a posição do peão e se está na reta final à lista
+							pawnPositionList.add(positionValue);
+							pawnPositionList.add(isInFinal ? 1 : 0);
+						}
+						pawnPositions.add(pawnPositionList);
+					}
+					// Atribui as posições dos peões
+					System.out.println("PPos:" + pawnPositions);
+				}
+			}
+	
+			reader.close();
+			System.out.println("Informações carregadas com sucesso!");
+		} catch (IOException e) {
+			System.err.println("Erro ao carregar as informações: " + e.getMessage());
+		}
+	}
+	
+	
 
 	private class DiceListener implements ActionListener {
 
