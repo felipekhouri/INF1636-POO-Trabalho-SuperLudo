@@ -226,10 +226,10 @@ public class BoardPanel extends JPanel {
          double largerCircleSize = circleSize*1.5;
          double smallerCircleSize = circleSize*1.2;
          
-         double largerX = (panelWidth - largerCircleSize) / 2.0;
-         double largerY = (panelHeight - largerCircleSize) / 2.0;
-         double smallerX = (panelWidth - smallerCircleSize) / 2.0;
-         double smallerY = (panelHeight - smallerCircleSize) / 2.0;
+         double largerX = (panelWidth - largerCircleSize/2.0);
+         double largerY = (panelHeight - largerCircleSize/2.0);
+         double smallerX = (panelWidth - smallerCircleSize/2.0);
+         double smallerY = (panelHeight - smallerCircleSize/2.0);
          
          Ellipse2D.Double backPawn = new Ellipse2D.Double(largerX,largerY,circleSize*1.5,circleSize*1.5);
          Ellipse2D.Double frontPawn = new Ellipse2D.Double(smallerX,smallerY,circleSize*1.2,circleSize*1.2);
