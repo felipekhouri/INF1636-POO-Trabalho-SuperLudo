@@ -106,7 +106,7 @@ public class Player {
 				pawnInInitialTile.setIsInInitialTile(false);
 				throw e;
 			}
-			System.out.println("Peao adicionado na casa " + pawnInInitialTile.currTile.getPosition().getNumber());
+			System.out.println("Peao adicionado na casa " + pawnInInitialTile.getTile().getPosition().getNumber());
 			return true; //o movimento foi possível.
 		}
 		return false;
@@ -140,9 +140,5 @@ public class Player {
 			if (p.getIsInInitialTile()) i++;
 		}
 		return i;
-	}
-
-	Pawn[] getPawns() {
-		return pawns;
 	}
 }

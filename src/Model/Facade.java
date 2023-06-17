@@ -102,9 +102,9 @@ public class Facade implements Observed {
 	{
 		int position = 0;
 		Tile auxTile;
-		if(p.currTile instanceof FinalTile ) {
+		if(p.getTile() instanceof FinalTile ) {
 			auxTile = FinalTile.finalTiles.get(p.getColor());
-			while (auxTile != p.currTile) {
+			while (auxTile != p.getTile()) {
 				auxTile = auxTile.getNextTile();
 				position ++;
 			}
@@ -155,8 +155,8 @@ public class Facade implements Observed {
 	protected void updateOccupiedTiles() {
 		for(Player player : players) {
 			for(Pawn pawn : player.pawns) {
-				if(!pawn.getIsInInitialTile() && !occupiedTiles.contains(pawn.currTile)) {
-					occupiedTiles.add(pawn.currTile);
+				if(!pawn.getIsInInitialTile() && !occupiedTiles.contains(pawn.getTile())) {
+					occupiedTiles.add(pawn.getTile());
 				}
 			}
 		}
@@ -430,7 +430,7 @@ public class Facade implements Observed {
 		for(Player p : players) {
 			printColor(p.getColor());
 			for (Pawn pawn : p.getPawns()) {
-				System.out.printf("Peao na posicao %d\n", pawn.currTile.getPosition().getNumber());
+				System.out.printf("Peao na posicao %d\n", pawn.getTile().getPosition().getNumber());
 			}
 		}
 	}
