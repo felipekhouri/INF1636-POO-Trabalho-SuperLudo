@@ -38,6 +38,7 @@ abstract public class Tile {
 	// retornar tile em array
 	public Pawn[] getCurrPawnsAsArray() {
 		Pawn array[] = new Pawn[numPawns];
+		if(numPawns == 0) return array;
 		int i = 0;
 		for (Pawn p : currPawns) {
 			array[i] = p;
@@ -60,7 +61,7 @@ abstract public class Tile {
 
 	public void removePawn(Pawn pawn) {
 		currPawns.remove(pawn);
-		numPawns--;
+		numPawns = currPawns.size();
 	}
 
 	public boolean isBarrier() {

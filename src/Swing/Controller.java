@@ -65,6 +65,9 @@ public class Controller implements Swing.Observer {
 		for(Tile t: model.getOccupiedTiles()) {
 			occupiedTiles.add(makeTileRepresentation(t));
 		}
+		for(Player p : model.getPlayers()) {
+			makeInitialTileRepresentations(p.getColor(), p.nPawnsInInitialTile());
+		}
 	}
 
 	private Color convertToAWT(Model.Color color) {
@@ -88,6 +91,35 @@ public class Controller implements Swing.Observer {
 	    return colors[index];
 	  }
 
+	private void makeInitialTileRepresentations(Model.Color color, int nPawns) {
+		double x, y;
+		for(int i = 0; i < nPawns; i++) {
+			x = model.tileSize;
+			y = model.tileSize;
+			if(i%2 == 1) x += 3 * model.tileSize;
+			if(i > 1) y += 3 * model.tileSize;
+			switch (color) {
+				case red:
+				break;
+				case blue:
+				y += 9 * model.tileSize;
+				break;
+				case yellow:
+				y += 9 * model.tileSize;
+				default: //case green
+				x += 9 * model.tileSize;
+				break;
+				
+			}
+			occupiedTiles.add(new TileRepresentation(
+				new Color[] {convertToAWT(color)},
+				TileType.single,
+				(int) x,
+				(int) y
+			));
+		}
+	}
+
 	private TileRepresentation makeTileRepresentation(Tile tile) {
 		Color pawnColors[] = new Color[tile.getNumPawns()];
 		TileType tileType;
@@ -96,7 +128,6 @@ public class Controller implements Swing.Observer {
 		position = model.getXY(tile.getPosition());
 		x = (int)position[0];
 		y = (int)position[1];
-
 		if (tile.getNumPawns() >= 2) {
 			if (tile.getCurrPawnsAsArray()[0].getColor() == tile.getCurrPawnsAsArray()[1].getColor()) {
 				tileType = TileType.twoSameColor;
@@ -108,7 +139,6 @@ public class Controller implements Swing.Observer {
 		} else {
 			tileType = TileType.empty;
 		}
-
 		for (int i = 0; i < tile.getCurrPawnsAsArray().length; i++) {
 			pawnColors[i] = convertToAWT( tile.getCurrPawnsAsArray()[i].getColor() );
 		}
@@ -145,12 +175,18 @@ public class Controller implements Swing.Observer {
 
 	@Override
 	public void notify(Observed observed) {
+		System.out.println("Chego nesse comeco da notify");
 		updateOccupiedTiles();
+		System.out.println("Passo aqui na notify");
 		if(!occupiedTiles.isEmpty()) {
 			view.getBoardPanel().setTileRepresentations(occupiedTiles);
 		}
 		player = convertToAWT(model.getCurrPlayerColor());
-		view.dicePanel.lancarDado(model.getNTiles());
+		if(model.getNTiles() < 1 || model.getNTiles() > 6) {
+			view.dicePanel.lancarDado(1);
+		} else {
+			view.dicePanel.lancarDado(model.getNTiles());
+		}
 		view.dicePanel.createPlayerRect(player);
 		view.getBoardPanel().repaint();
 	}

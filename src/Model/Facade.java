@@ -321,7 +321,7 @@ public class Facade implements Observed {
 		if(nTiles == 6) {
 			System.out.printf("O jogador ");
 			printColor(currPlayer.getColor());
-			System.out.println("tirou 6\n");
+			System.out.println(" tirou 6\n");
 			currPlayer.rollSixOnDice();
 			if (currPlayer.getNStraight6() == 3) {
 				lastPlayedPawn.sendToInitial();
@@ -330,8 +330,6 @@ public class Facade implements Observed {
 				return nTiles;
 			} else {
 				System.out.println("Pode jogar novamente");
-				hasRolledDice = true;
-				canPlayAgain = true;
 			}
 		}
 		
@@ -383,15 +381,23 @@ public class Facade implements Observed {
 		} catch (MoveImpossibleException e) {
 			return;
 		} catch (PawnCapturedException e) {
+			System.out.println("A capture ocurred!");
 			canPlayAgain = true;
 			nTiles = 6;
+			notifyObservers();
 			return;
 		} catch (PawnInFinalTileException e) {
 			if(currPlayer.hasWon()) {
 				//TODO: substituir isso por false
 			}
 		}
-		nextPlayer();
+		lastPlayedPawn = selectedPawn;
+		if(nTiles != 6) {
+			nextPlayer();
+		} else {
+			hasRolledDice = false;
+			canPlayAgain = false;
+		}
 		notifyObservers();
 		return;
 	}
@@ -429,6 +435,10 @@ public class Facade implements Observed {
 		}
 	}
 
+	public Player[] getPlayers() {
+		return players;
+	}
+
 	//implementacao de observable
 	@Override
 	public void addObserver(Swing.Observer observer) {
@@ -441,9 +451,6 @@ public class Facade implements Observed {
 	}
 
 	public void notifyObservers() {
-		if (nTiles < 1 || nTiles > 6) {
-			nTiles = 1;
-		}
 		updateOccupiedTiles();
 		for (Swing.Observer observer : observers) {
 			observer.notify(this);

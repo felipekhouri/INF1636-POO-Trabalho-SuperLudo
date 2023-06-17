@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 
-class Player {
+public class Player {
 	Pawn[] pawns;
 	private Color color;
 	private ExitTile exitTile;
@@ -76,6 +76,7 @@ class Player {
 	public boolean startPawn()
 	throws PawnCapturedException
 	{
+		System.out.println("startPawn chamada");
 		Pawn pawnInInitialTile = null;
 		for (Pawn p: pawns) { //analisamos cada peão para encontrar um que esteja na casa inicial
 			if (p.getIsInInitialTile()) {
@@ -97,8 +98,11 @@ class Player {
 				return false; //caso addPawn jogue alguma exceção, o movimento não é possível
 			}
 			catch (PawnCapturedException e) {
+				System.out.println("Capturado!");
+				pawnInInitialTile.setIsInInitialTile(false);
 				throw e;
 			}
+			System.out.println("Peao adicionado na casa " + pawnInInitialTile.currTile.getPosition().getNumber());
 			return true; //o movimento foi possível.
 		}
 		return false;
@@ -124,6 +128,14 @@ class Player {
 	
 	public void endPlay() {
 		nStraight6 = 0;
+	}
+
+	public int nPawnsInInitialTile() {
+		int i = 0;
+		for(Pawn p : pawns) {
+			if (p.getIsInInitialTile()) i++;
+		}
+		return i;
 	}
 
 	Pawn[] getPawns() {
