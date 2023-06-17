@@ -194,7 +194,7 @@ public class BoardPanel extends JPanel {
    	 	double panelHeight = posY;
    	 	
         
-        Ellipse2D.Double pawn = new Ellipse2D.Double(posX/2,posY/2,circleSize,circleSize);
+        Ellipse2D.Double pawn = new Ellipse2D.Double(posX,posY,circleSize,circleSize);
 
         drawCircle(pawn,g2d, Color.BLACK, pawnColor);
         return pawn;
@@ -207,10 +207,10 @@ public class BoardPanel extends JPanel {
         double largerCircleSize = circleSize*1.5;
         double smallerCircleSize = circleSize*1.2;
         
-        double largerX = (panelWidth - largerCircleSize) / 2.0;
-        double largerY = (panelHeight - largerCircleSize) / 2.0;
-        double smallerX = (panelWidth - smallerCircleSize) / 2.0;
-        double smallerY = (panelHeight - smallerCircleSize) / 2.0;
+        double largerX = (panelWidth - largerCircleSize/2);
+        double largerY = (panelHeight - largerCircleSize/2);
+        double smallerX = (panelWidth - smallerCircleSize/2);
+        double smallerY = (panelHeight - smallerCircleSize/2);
         
         Ellipse2D.Double backPawn = new Ellipse2D.Double(largerX,largerY,circleSize*1.5,circleSize*1.5);
         Ellipse2D.Double frontPawn = new Ellipse2D.Double(smallerX,smallerY,circleSize*1.2,circleSize*1.2);
@@ -226,10 +226,10 @@ public class BoardPanel extends JPanel {
          double largerCircleSize = circleSize*1.5;
          double smallerCircleSize = circleSize*1.2;
          
-         double largerX = (panelWidth - largerCircleSize) / 2.0;
-         double largerY = (panelHeight - largerCircleSize) / 2.0;
-         double smallerX = (panelWidth - smallerCircleSize) / 2.0;
-         double smallerY = (panelHeight - smallerCircleSize) / 2.0;
+         double largerX = (panelWidth - largerCircleSize/2.0);
+         double largerY = (panelHeight - largerCircleSize/2.0);
+         double smallerX = (panelWidth - smallerCircleSize/2.0);
+         double smallerY = (panelHeight - smallerCircleSize/2.0);
          
          Ellipse2D.Double backPawn = new Ellipse2D.Double(largerX,largerY,circleSize*1.5,circleSize*1.5);
          Ellipse2D.Double frontPawn = new Ellipse2D.Double(smallerX,smallerY,circleSize*1.2,circleSize*1.2);
@@ -423,9 +423,7 @@ public class BoardPanel extends JPanel {
 	private void drawAllTiles() {
 		double x, y;
 		Color[] color;
-		System.out.println("rideu");
 		if(tileRepresentations == null) { 
-			System.out.println("recebi null");
 			return; 
 		}
 		for(TileRepresentation representation : tileRepresentations) {
@@ -436,14 +434,14 @@ public class BoardPanel extends JPanel {
 			switch (representation.getType()) {
 				case twoSameColor:
 				drawBarrier(color[0], x, y, g2d);
+				break;
 				case twoDifferentColor:
 				drawExitDoublePawn(color[0], color[1], x, y, g2d);
-				System.out.println("desenhei casa de saida");
+				break;
 				case single:
 				drawPawn(color[0], x, y, g2d);
-				System.out.println("desenhei casa de saida");
+				break;
 				default:
-				System.out.println("desenhei foi nada");
 				continue;
 			} 
 		}

@@ -5,6 +5,12 @@ class ExitTile extends Tile{
 	protected Color color;
 	
 	public ExitTile(Color c) {
+		super();
+		color = c;
+	}
+
+	public ExitTile(Color c, int position, boolean isInFinalTiles) {
+		super(position, isInFinalTiles);
 		color = c;
 	}
 	
@@ -44,11 +50,12 @@ class ExitTile extends Tile{
 			if (numPawns == 1 && (currPawns.iterator().next().getColor() != color) && p.getColor() == color) {
 				currPawns.iterator().next().sendToInitial(); //peao que estava na casa eh capturada
 				currPawns.add(p);
+				numPawns = currPawns.size();
 				throw new PawnCapturedException();
 			}
 			
 			currPawns.add(p);
-			numPawns ++;
+			numPawns = currPawns.size();
 		}
 		else {
 			throw new MoveImpossibleException(/*"Cannot add pawn to exit tile."*/);

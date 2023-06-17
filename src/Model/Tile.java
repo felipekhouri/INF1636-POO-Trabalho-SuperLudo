@@ -12,8 +12,10 @@ abstract public class Tile {
 	protected PawnPosition position;
 	// public double x,y;
 	
-	public Tile() {
+	public Tile() {}
 
+	public Tile(int position, boolean isInFinalTiles) {
+		this.position = new PawnPosition(position, isInFinalTiles);
 	}
 
 	// getters
@@ -36,6 +38,7 @@ abstract public class Tile {
 	// retornar tile em array
 	public Pawn[] getCurrPawnsAsArray() {
 		Pawn array[] = new Pawn[numPawns];
+		if(numPawns == 0) return array;
 		int i = 0;
 		for (Pawn p : currPawns) {
 			array[i] = p;
@@ -58,7 +61,7 @@ abstract public class Tile {
 
 	public void removePawn(Pawn pawn) {
 		currPawns.remove(pawn);
-		numPawns--;
+		numPawns = currPawns.size();
 	}
 
 	public boolean isBarrier() {

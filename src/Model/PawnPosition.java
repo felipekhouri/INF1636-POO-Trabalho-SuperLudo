@@ -16,4 +16,9 @@ public class PawnPosition {
 	public boolean getIsInFinalTiles() {
 		return isInFinalTiles;
 	}
+
+	public boolean equals(PawnPosition p) {
+		System.out.println("De-me {destaque}");
+		return ( (this.number == p.number) && (this.isInFinalTiles == p.isInFinalTiles) );
+	}
 }
