@@ -3,7 +3,7 @@ package Model;
 class RegularTile extends Tile {
 	//repensar 
 	
-	public RegularTile(){}
+	// public RegularTile(){}
 	
 	public RegularTile(int position, boolean isInFinalTiles){
 		super(position, isInFinalTiles);

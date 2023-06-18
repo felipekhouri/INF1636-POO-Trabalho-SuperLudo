@@ -70,9 +70,17 @@ public class Controller implements Swing.Observer {
 	private void saveInfo(File file) {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			Model.Color currentPlayer = model.getCurrPlayerColor();
-			writer.write("Player: " + currentPlayer);
+			writer.write("currPlayer: " + currentPlayer);
 			writer.newLine();
-			writer.write("Game State: ");
+			writer.write("lastDiceRoll: " + model.getNTiles());
+			writer.newLine();
+			if (model.getLastPlayedPawn() != null) {
+				writer.write("lastPlayedPawn: " + model.getLastPlayedPawn().getColor() + "," + model.getLastPlayedPawn().getTile().getPosition());
+				writer.newLine();
+			}
+			writer.write("canPlayAgain: " + model.getCanPlayAgain());
+			writer.newLine();
+			writer.write("hasRolledDice: " + model.getHasRolledDice());
 			writer.newLine();
 			writer.write("Pawn Positions:");
 			writer.newLine();
@@ -94,38 +102,59 @@ public class Controller implements Swing.Observer {
 	private void loadInfo(File file) {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-	
+			String currentPlayer = "null";
+			int lastDiceRoll = 1;
+			String lastPawnColor = "null";
+			int lastPawnPosition = 0;
+			boolean canPlayAgain = false;
+			boolean hasRolledDice = true;
+			boolean lastPawn = model.getLastPlayedPawn() == null ? false : true;
+			List<List<Integer>> pawnPositions = new ArrayList<>();
+
 			String line;
 			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("Player:")) {
-					String player = line.substring(line.indexOf(":") + 1).trim();
+				if (line.startsWith("currPlayer:")) {
+					currentPlayer = line.substring(line.indexOf(":") + 1).trim();
 					// Atribui o jogador da vez
-					System.out.println("Player: " + player);
-				} else if (line.startsWith("Game State:")) {
-					String gameState = line.substring(line.indexOf(":") + 1).trim();
-					// Atribui o estado do jogo
-					System.out.println("Game State: " + gameState);
+					System.out.println("Current Player: " + currentPlayer);
+				} else if (line.startsWith("lastDiceRoll:")) {
+					lastDiceRoll = Integer.parseInt(line.substring(line.indexOf(":") + 1).trim());
+					// Atribui o último resultado do dado
+					System.out.println("Last Dice Roll: " + lastDiceRoll);
+				} else if (line.startsWith("lastPlayedPawn:")) {
+					String[] pawnInfo = line.substring(line.indexOf(":") + 1).trim().split(",");
+					lastPawnColor = pawnInfo[0].trim();
+					lastPawnPosition = Integer.parseInt(pawnInfo[1].trim());
+					// Atribui o último peão jogado
+					System.out.println("Last Played Pawn: Color=" + lastPawnColor + ", Position=" + lastPawnPosition);
+				} else if (line.startsWith("canPlayAgain:")) {
+					canPlayAgain = Boolean.parseBoolean(line.substring(line.indexOf(":") + 1).trim());
+					// Atribui a informação se pode jogar novamente
+					System.out.println("Can Play Again: " + canPlayAgain);
+				} else if (line.startsWith("hasRolledDice:")) {
+					hasRolledDice = Boolean.parseBoolean(line.substring(line.indexOf(":") + 1).trim());
+					// Atribui a informação se já lançou o dado
+					System.out.println("Has Rolled Dice: " + hasRolledDice);
 				} else if (line.equals("Pawn Positions:")) {
 					// Leitura das posições dos peões
-					List<List<Integer>> pawnPositions = new ArrayList<>();
-					for (int i = 0; i < 4; i++) {
-						line = reader.readLine();
+					while ((line = reader.readLine()) != null && !line.isEmpty()) {
 						String[] positions = line.split(",");
 						List<Integer> pawnPositionList = new ArrayList<>();
 						for (String position : positions) {
-							String[] parts = position.split("/");
-							int positionValue = Integer.parseInt(parts[0].trim());
-							boolean isInFinal = Boolean.parseBoolean(parts[1].trim());
-							// Adiciona a posição do peão e se está na reta final à lista
-							pawnPositionList.add(positionValue);
-							pawnPositionList.add(isInFinal ? 1 : 0);
+							String[] posInfo = position.split("/");
+							int posNumber = Integer.parseInt(posInfo[0].trim());
+							boolean isInFinalTiles = Boolean.parseBoolean(posInfo[1].trim());
+							pawnPositionList.add(posNumber);
+							// Atribui a posição e a informação se está na reta final para cada peão
+							System.out.println("Pawn Position: Number=" + posNumber + ", IsInFinalTiles=" + isInFinalTiles);
 						}
 						pawnPositions.add(pawnPositionList);
 					}
 					// Atribui as posições dos peões
-					System.out.println("PPos:" + pawnPositions);
+					System.out.println("Pawn Positions: " + pawnPositions);
 				}
 			}
+			model.setLoadedGame(pawnPositions, currentPlayer, lastDiceRoll, lastPawnPosition, lastPawnColor, canPlayAgain, hasRolledDice, lastPawn);
 	
 			reader.close();
 			System.out.println("Informações carregadas com sucesso!");
@@ -133,6 +162,7 @@ public class Controller implements Swing.Observer {
 			System.err.println("Erro ao carregar as informações: " + e.getMessage());
 		}
 	}
+	
 	
 	
 
