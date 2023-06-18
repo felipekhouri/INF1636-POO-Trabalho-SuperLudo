@@ -4,7 +4,7 @@ public class Pawn {
 	private Color color;
 	private boolean isInInitialTile = true;
 	private boolean isInLastTile = false;
-	public Tile currTile;
+	private Tile currTile;
 	
 	public Pawn(Color color, Tile tile) {
 		this.color = color;
@@ -109,6 +109,10 @@ public class Pawn {
 	public Color getColor() 
 	{
 		return color;
+	}
+
+	public Tile getTile(){
+		return currTile;
 	}
 	
 	
