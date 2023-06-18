@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.*;
 import Model.*;
 import javax.swing.JOptionPane;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 
@@ -187,51 +188,6 @@ public class Controller implements Swing.Observer {
 			default:
 			return Color.BLUE;
 		}
-	}
-	
-	private static Color nextPlayer() {
-		Random random = new Random();
-		Color[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
-	    int index = random.nextInt(colors.length);
-	      
-	    return colors[index];
-	  }
-
-	private void makeInitialTileRepresentations(Model.Color color, int nPawns) {
-		double x, y;
-		for(int i = 0; i < nPawns; i++) {
-			x = model.tileSize;
-			y = model.tileSize;
-			if(i%2 == 1) x += 3 * model.tileSize;
-			if(i > 1) y += 3 * model.tileSize;
-			switch (color) {
-				case red:
-				break;
-				case blue:
-				y += 9 * model.tileSize;
-				break;
-				case yellow:
-				y += 9 * model.tileSize;
-				default: //case green
-				x += 9 * model.tileSize;
-				break;
-				
-			}
-			occupiedTiles.add(new TileRepresentation(
-				new Color[] {convertToAWT(color)},
-				TileType.single,
-				(int) x,
-				(int) y
-			));
-		}
-	}
-
-	private static Color nextPlayer() {
-		Random random = new Random();
-		Color[] colors = { Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN };
-		int index = random.nextInt(colors.length);
-
-		return colors[index];
 	}
 
 	private void makeInitialTileRepresentations(Model.Color color, int nPawns) {
