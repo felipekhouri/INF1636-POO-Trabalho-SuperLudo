@@ -31,6 +31,77 @@ public class Facade implements Observed {
 			instance = new Facade();
 		return instance;
 	}
+
+	public void setLoadedGame(List<List<Integer>> pawnPositions, String currPlayer, int lastDice, int lastPawnPos,String lastPawnColor, boolean canPlay, boolean hasRolledDice, boolean lastPawn){
+		Color playerColor = Color.valueOf(currPlayer);
+		System.out.println("\n\n\nPLAYER COLOR->" + playerColor);
+		this.currPlayer = findPlayer(playerColor);
+		System.out.println("PLAYER COLORED ->" + findPlayer(playerColor).getColor());
+		int playerIndex = 0;
+	
+		for (Player player : this.players) {
+			// Verifica se ainda existem valores na lista pawnPositions
+			if (playerIndex < pawnPositions.size()) {
+				List<Integer> playerPawnPositions = pawnPositions.get(playerIndex);
+	
+				int pawnIndex = 0;
+				for (Pawn pawn : player.pawns) {
+					// Verifica se ainda existem valores na lista playerPawnPositions
+					if (pawnIndex < playerPawnPositions.size()) {
+						// Obtém o valor da posição atual da lista playerPawnPositions
+						int position = playerPawnPositions.get(pawnIndex);
+	
+						if (position == -1){
+							pawnIndex++;
+							continue;
+						}
+						// Obtém o Tile correspondente à posição desejada
+						Tile tile = getTileByPosition(position);
+	
+						// Move o peão para o Tile desejado
+						try {
+							pawn.setTile(tile); // Use o método de movimento do seu peão
+						} catch (Exception e){
+							// Trate as exceções conforme necessário
+							e.printStackTrace();
+						}
+	
+						// Incrementa o índice do peão
+						pawnIndex++;
+					}
+				}
+	
+				// Incrementa o índice do jogador
+				playerIndex++;
+			}
+		}
+		
+		// for pelos players, preenchendo as pos dos pawns
+		this.nTiles = lastDice;
+		if (lastPawn) {
+			Color pawnColor = Color.valueOf(lastPawnColor);
+			this.lastPlayedPawn = findPawn(lastPawnPos, Color.red).get(0);
+			// System.out.println("\n\n\nPAWN COLOR->" + pawnColor);
+		}
+		// this.availablePawns = availablePawns;
+		this.canPlayAgain = canPlay;
+		// available pawns: savar cor e posicao, depois comparar com os existentes
+		this.hasRolledDice = hasRolledDice;
+		updateOccupiedTiles();
+	}
+
+	private Tile getTileByPosition(int position) {
+		Tile currentTile = this.anchor;
+		while (currentTile != null) {
+			if (currentTile.getPosition().getNumber() == position) {
+				System.out.println("POSITION -> " + position);
+				return currentTile;
+			}
+			currentTile = currentTile.getNextTile();
+		}
+		return null; // Retorne null se o Tile não for encontrado
+	}
+
 	//não queremos usar o singleton em testes
 	protected static Facade getTestInstance() {
 		return new Facade();
@@ -111,7 +182,7 @@ public class Facade implements Observed {
 	 * getAvaliablePawnPosition retorna a posição do peão selecionado atualmente no sistema de coordenadas
 	 * do tabuleiro. Este método não será private para que possa ser testado.
 	 */
-	PawnPosition getPawnPosition(Pawn p) 
+	public PawnPosition getPawnPosition(Pawn p) 
 	{
 		int position = 0;
 		Tile auxTile;
@@ -142,6 +213,7 @@ public class Facade implements Observed {
 			auxTile = auxTile.getNextTile();
 			position++;
 		} while (auxTile != anchor);
+		System.out.println("CAI AQUI | PTPos ->" + p.getTile().getPosition().getNumber());
 		return new PawnPosition(-1, false);
 	}
 
@@ -520,6 +592,26 @@ public class Facade implements Observed {
 		return players;
 	}
 
+	public List<Pawn> findPawn(int position, Color color){
+		List<Pawn> targetPawns = new ArrayList<>(16);
+		for (Player player : players){
+			for (Pawn pawn : player.getPawns()) {
+				if (pawn.getTile().getPosition().getNumber() == position && pawn.getColor() == color){
+					targetPawns.add(pawn);
+				}
+			}
+		}
+		return targetPawns;
+	}
+
+	public Player findPlayer(Color color){
+		for (Player player : players){
+			if (player.getColor() == color){
+				return player;
+			}
+		}
+		return null;
+	}
 	//implementacao de observable
 	@Override
 	public void addObserver(Swing.Observer observer) {
@@ -537,5 +629,21 @@ public class Facade implements Observed {
 		for (Swing.Observer observer : observers) {
 			observer.notify(this);
 		}
+	}
+
+	public int getLastDiceRoll() {
+		return lastDiceRoll;
+	}
+
+	public Pawn getLastPlayedPawn() {
+		return lastPlayedPawn;
+	}
+
+	public boolean getCanPlayAgain() {
+		return canPlayAgain;
+	}
+
+	public boolean getHasRolledDice() {
+		return hasRolledDice;
 	}
 }

@@ -115,5 +115,8 @@ public class Pawn {
 		return currTile;
 	}
 	
+	public void setTile(Tile tile){
+		this.currTile = tile;
+	}
 	
 }

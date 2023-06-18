@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.*;
 import Model.*;
 import javax.swing.JOptionPane;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 
@@ -40,8 +41,113 @@ public class Controller implements Swing.Observer {
 		view.setSize(1000, 800);
 
 	}
+
+	private void saveInfo(File file) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			Model.Color currentPlayer = model.getCurrPlayerColor();
+			writer.write("currPlayer: " + currentPlayer);
+			writer.newLine();
+			writer.write("lastDiceRoll: " + model.getNTiles());
+			System.out.println("nTiles: " + model.getNTiles());
+			writer.newLine();
+			if (model.getLastPlayedPawn() != null) {
+				writer.write("lastPlayedPawn: " + model.getLastPlayedPawn().getColor() + "," + model.getLastPlayedPawn().getTile().getPosition());
+				writer.newLine();
+			}
+			writer.write("canPlayAgain: " + model.getCanPlayAgain());
+			writer.newLine();
+			writer.write("hasRolledDice: " + model.getHasRolledDice());
+			writer.newLine();
+			writer.write("Pawn Positions:");
+			writer.newLine();
+			for (Player player : model.getPlayers()) {
+				for (Pawn pawn : player.getPawns()) {
+					PawnPosition pPosition = model.getPawnPosition(pawn);
+					writer.write(pPosition.getNumber() + "/");
+					writer.write(pPosition.getIsInFinalTiles() + ",");
+					if (pPosition.getNumber() == -1){
+						System.out.println("MAIS UM -1");
+
+					}
+					
+				}
+				writer.newLine();
+			}
+			System.out.println("Informações salvas com sucesso!");
+		} catch (IOException e) {
+			System.err.println("Erro ao salvar as informações: " + e.getMessage());
+		}
+	}
 	
-	private class DiceListener implements ActionListener{
+
+	private void loadInfo(File file) {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String currentPlayer = "null";
+			int lastDiceRoll = 1;
+			String lastPawnColor = "null";
+			int lastPawnPosition = 0;
+			boolean canPlayAgain = false;
+			boolean hasRolledDice = true;
+			boolean lastPawn = model.getLastPlayedPawn() == null ? false : true;
+			List<List<Integer>> pawnPositions = new ArrayList<>();
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("currPlayer:")) {
+					currentPlayer = line.substring(line.indexOf(":") + 1).trim();
+					// Atribui o jogador da vez
+					System.out.println("Current Player: " + currentPlayer);
+				} else if (line.startsWith("lastDiceRoll:")) {
+					lastDiceRoll = Integer.parseInt(line.substring(line.indexOf(":") + 1).trim());
+					// Atribui o último resultado do dado
+					System.out.println("Last Dice Roll: " + lastDiceRoll);
+				} else if (line.startsWith("lastPlayedPawn:")) {
+					String[] pawnInfo = line.substring(line.indexOf(":") + 1).trim().split(",");
+					lastPawnColor = pawnInfo[0].trim();
+					lastPawnPosition = Integer.parseInt(pawnInfo[1].trim());
+					// Atribui o último peão jogado
+					System.out.println("Last Played Pawn: Color=" + lastPawnColor + ", Position=" + lastPawnPosition);
+				} else if (line.startsWith("canPlayAgain:")) {
+					canPlayAgain = Boolean.parseBoolean(line.substring(line.indexOf(":") + 1).trim());
+					// Atribui a informação se pode jogar novamente
+					System.out.println("Can Play Again: " + canPlayAgain);
+				} else if (line.startsWith("hasRolledDice:")) {
+					hasRolledDice = Boolean.parseBoolean(line.substring(line.indexOf(":") + 1).trim());
+					// Atribui a informação se já lançou o dado
+					System.out.println("Has Rolled Dice: " + hasRolledDice);
+				} else if (line.equals("Pawn Positions:")) {
+					// Leitura das posições dos peões
+					while ((line = reader.readLine()) != null && !line.isEmpty()) {
+						String[] positions = line.split(",");
+						List<Integer> pawnPositionList = new ArrayList<>();
+						for (String position : positions) {
+							String[] posInfo = position.split("/");
+							int posNumber = Integer.parseInt(posInfo[0].trim());
+							boolean isInFinalTiles = Boolean.parseBoolean(posInfo[1].trim());
+							pawnPositionList.add(posNumber);
+							// Atribui a posição e a informação se está na reta final para cada peão
+							System.out.println("Pawn Position: Number=" + posNumber + ", IsInFinalTiles=" + isInFinalTiles);
+						}
+						pawnPositions.add(pawnPositionList);
+					}
+					// Atribui as posições dos peões
+					System.out.println("Pawn Positions: " + pawnPositions);
+				}
+			}
+			model.setLoadedGame(pawnPositions, currentPlayer, lastDiceRoll, lastPawnPosition, lastPawnColor, canPlayAgain, hasRolledDice, lastPawn);
+	
+			reader.close();
+			System.out.println("Informações carregadas com sucesso!");
+		} catch (IOException e) {
+			System.err.println("Erro ao carregar as informações: " + e.getMessage());
+		}
+	}
+	
+	
+	
+
+	private class DiceListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -83,14 +189,6 @@ public class Controller implements Swing.Observer {
 			return Color.BLUE;
 		}
 	}
-	
-	private static Color nextPlayer() {
-		Random random = new Random();
-		Color[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
-	    int index = random.nextInt(colors.length);
-	      
-	    return colors[index];
-	  }
 
 	private void makeInitialTileRepresentations(Model.Color color, int nPawns) {
 		double x, y;
