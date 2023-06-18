@@ -55,6 +55,8 @@ public class Facade implements Observed {
 	private boolean hasRolledDice = false;
 	//indica se houve captura na ultima jogada
 	private boolean dontRollDiceAfterSecondPlay = false;
+	//indica se algu jogador ganhou ou nao o jogo
+	private boolean endGame = false;
 	//todas as tiles em que há peoes
 	private Set<Tile> occupiedTiles = new HashSet<Tile>();
 	
@@ -221,6 +223,17 @@ public class Facade implements Observed {
 		return nTiles;
 	}
 
+	public boolean getEndGame() {
+		return endGame;
+	}
+
+	public Player[] getSortedPlayers() {
+		Player[] returnValue = new Player[4];
+		System.arraycopy(players, 0, returnValue, 0, 4);
+		Arrays.sort(returnValue);
+		return returnValue;
+	}
+
 	/*
 	 * nextPlayer atualiza os valores das variáveis para o próximo jogador
 	 * Não vamos testar esta função, pois é muito simples.
@@ -352,16 +365,16 @@ public class Facade implements Observed {
 			if (availablePawns.size() == 2) {
 				for(Pawn p : availablePawns) {
 					hasRolledDice = true;
-					play(p.currTile.getPosition());
+					play(p.getTile().getPosition());
 					return nTiles;
 				}
 			} else {
 				PawnPosition firstPosition = null;
 				PawnPosition secondPosition = null;
 				for(Pawn p : availablePawns) {
-					if(firstPosition == null) firstPosition = p.currTile.getPosition();
-					else if (!firstPosition.equals(p.currTile.getPosition())) {
-						secondPosition = p.currTile.getPosition();
+					if(firstPosition == null) firstPosition = p.getTile().getPosition();
+					else if (!firstPosition.equals(p.getTile().getPosition())) {
+						secondPosition = p.getTile().getPosition();
 						break;
 					}
 				}
@@ -382,7 +395,6 @@ public class Facade implements Observed {
 	}
 	
 	private void play(PawnPosition selectedPawnPosition) {
-		System.out.println("Funcao play da Facade chamada");
 		if ((!hasRolledDice) && (!canPlayAgain)) {
 			//TODO: mudar isso por uma mensagem na tela
 			return;
@@ -424,12 +436,17 @@ public class Facade implements Observed {
 			return;
 		} catch (PawnInFinalTileException e) {
 			if(currPlayer.hasWon()) {
-				System.out.println("O jogador ghanhou!!");
+				endGame = true;
+				notifyObservers();
 				return;
 			}
 			canPlayAgain = true;
 			dontRollDiceAfterSecondPlay = true;
 			nTiles = 6;
+			try { availablePawns = currPlayer.evaluateMoves(nTiles); }
+			catch(NoMovesAvailableException e2) {
+				nextPlayer();
+			} catch(BarrierFoundException e2) {}
 			notifyObservers();
 			return;
 		}

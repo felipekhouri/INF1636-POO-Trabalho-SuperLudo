@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import Model.*;
+import javax.swing.JOptionPane;
 
 import javax.imageio.ImageIO;
 
@@ -179,9 +180,7 @@ public class Controller implements Swing.Observer {
 
 	@Override
 	public void notify(Observed observed) {
-		System.out.println("Chego nesse comeco da notify");
 		updateOccupiedTiles();
-		System.out.println("Passo aqui na notify");
 		if(!occupiedTiles.isEmpty()) {
 			view.getBoardPanel().setTileRepresentations(occupiedTiles);
 		}
@@ -193,6 +192,9 @@ public class Controller implements Swing.Observer {
 		}
 		view.dicePanel.createPlayerRect(player);
 		view.getBoardPanel().repaint();
+		if(model.getEndGame()) {
+			showFinalMessage(model.getSortedPlayers());
+		}
 	}
 
 	public void play(double x, double y) {
@@ -203,8 +205,23 @@ public class Controller implements Swing.Observer {
 		return occupiedTiles;
 	}
 
-		
-		//fazer fun;cào
+	public void showFinalMessage(Model.Player[] players){
+
+        String p1 = players[0].getColor().toString();
+        String p2 = players[1].getColor().toString();
+        String p3 = players[2].getColor().toString();
+        String p4 = players[3].getColor().toString();
+
+        JOptionPane.showMessageDialog(null, "1o lugar: "+p1 + "\n2o lugar: " + p2 + "\n3o lugar: " + p3 + "\n4o lugar: " + p4);
+        int choice = JOptionPane.showConfirmDialog(null, "Deseja começar um novo jogo?", "", JOptionPane.YES_NO_OPTION);
+        if (choice == JOptionPane.YES_OPTION) {
+            //chama função reset da façade e repaint a view
+            System.out.println("Novo jogo");
+        } 
+        else {
+            System.exit(1);
+        }
+    }
 			
 		
 
