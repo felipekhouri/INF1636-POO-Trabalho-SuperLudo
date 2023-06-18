@@ -41,8 +41,9 @@ class FinalTile extends Tile{
 	static {
 		int increment;
 		FinalTile firstTile, currTile;
-		boolean isLastFinalTile = false;
+		boolean isLastFinalTile;
 		for(Color c: Color.values()) { //vamos criar uma "reta final" para cada cor
+			isLastFinalTile = false;
 			switch(c) {
 				case red:
 				increment = 0;

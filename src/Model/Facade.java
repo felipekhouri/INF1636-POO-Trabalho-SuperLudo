@@ -194,13 +194,13 @@ public class Facade implements Observed {
 			}
 			switch(p.getColor()) {
 			case green:
-				position += 5;
+				position += 6;
 				break;
 			case yellow:
-				position += 10;
+				position += 12;
 				break;
 			case blue:
-				position += 15;
+				position += 18;
 			}
 			return new PawnPosition(position, true);
 		}
@@ -227,7 +227,7 @@ public class Facade implements Observed {
 			if ( (y >= tileY) && (y <= tileY + tileSize) && (x >= tileX) && (x <= tileX + tileSize) )
 				return position;
 		}
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 24; i++) {
 			position = new PawnPosition(i, true);
 			result = getXY(position);
 			tileX = result[0]; tileY = result[1];
@@ -284,11 +284,11 @@ public class Facade implements Observed {
 			if(position < 6) {
 				return new double[] {xAnchor + tileSize*position, yAnchor + tileSize};
 			} else if (position < 12) {
-				return new double[] {xAnchor + 6*tileSize, yAnchor - 5*tileSize + (position-5)*tileSize};
+				return new double[] {xAnchor + 6*tileSize, yAnchor - 5*tileSize + (position-6)*tileSize};
 			} else if (position < 18) {
-				return new double[] {xAnchor + 12*tileSize - tileSize*(position-10), yAnchor + tileSize};
+				return new double[] {xAnchor + 12*tileSize - tileSize*(position-12), yAnchor + tileSize};
 			} else {
-				return new double[] {xAnchor + 6 * tileSize, yAnchor + 7*tileSize - (position-15)*tileSize};
+				return new double[] {xAnchor + 6 * tileSize, yAnchor + 7*tileSize - (position-18)*tileSize};
 			}
 		}
 		return new double[] {xAnchor, yAnchor};
@@ -525,6 +525,7 @@ public class Facade implements Observed {
 			notifyObservers();
 			return;
 		} catch (PawnInFinalTileException e) {
+			System.out.println("Im here");
 			if(currPlayer.hasWon()) {
 				endGame = true;
 				notifyObservers();
