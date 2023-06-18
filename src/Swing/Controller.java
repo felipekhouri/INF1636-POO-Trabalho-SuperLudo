@@ -173,6 +173,10 @@ public class Controller implements Swing.Observer {
 		this.model = model;
 	}
 
+	public double getTileSize() {
+		return model.tileSize;
+	}
+
 	@Override
 	public void notify(Observed observed) {
 		System.out.println("Chego nesse comeco da notify");

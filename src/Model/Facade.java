@@ -348,6 +348,33 @@ public class Facade implements Observed {
 			return nTiles;
 		} catch (BarrierFoundException e) {
 			availablePawns = e.getPawnsInBarrier();
+			System.out.println("Number of available pawns: " + availablePawns.size());
+			if (availablePawns.size() == 2) {
+				for(Pawn p : availablePawns) {
+					hasRolledDice = true;
+					play(p.currTile.getPosition());
+					return nTiles;
+				}
+			} else {
+				PawnPosition firstPosition = null;
+				PawnPosition secondPosition = null;
+				for(Pawn p : availablePawns) {
+					if(firstPosition == null) firstPosition = p.currTile.getPosition();
+					else if (!firstPosition.equals(p.currTile.getPosition())) {
+						secondPosition = p.currTile.getPosition();
+						break;
+					}
+				}
+				hasRolledDice = true;
+				if(firstPosition.closestToFinal(secondPosition, currPlayer.getColor())) {
+					play(firstPosition);
+					notifyObservers();
+					return nTiles;
+				}
+				play(secondPosition);
+				notifyObservers();
+				return nTiles;
+			}
 		}
 		hasRolledDice = true;
 		notifyObservers();

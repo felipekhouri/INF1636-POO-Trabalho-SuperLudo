@@ -102,4 +102,30 @@ abstract public class Tile {
 	protected void setNextTile(Tile t) {
 		nextTile = t;
 	}
+
+	static protected int getFinalTileForColor(Color c) {
+		switch(c) {
+			case red:
+			return 5;
+			case green:
+			return 11;
+			case yellow:
+			return 17;
+			default:
+			return 23;
+		}
+	}
+
+	static protected int getEntryTileForColor(Color c) {
+		switch(c) {
+			case red:
+			return 50;
+			case green:
+			return 11;
+			case yellow:
+			return 24;
+			default:
+			return 37;
+		}
+	}
 }
