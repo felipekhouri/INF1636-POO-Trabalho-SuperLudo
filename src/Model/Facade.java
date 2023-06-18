@@ -124,6 +124,10 @@ public class Facade implements Observed {
 	private boolean canPlayAgain = false;
 	//indica se o jogador ja rolou o dado antes de jogar
 	private boolean hasRolledDice = false;
+	//indica se houve captura na ultima jogada
+	private boolean dontRollDiceAfterSecondPlay = false;
+	//indica se algu jogador ganhou ou nao o jogo
+	private boolean endGame = false;
 	//todas as tiles em que há peoes
 	private Set<Tile> occupiedTiles = new HashSet<Tile>();
 	
@@ -155,6 +159,8 @@ public class Facade implements Observed {
 				}
 				currTile.setNextTile(new ExitTile(color, position, false));
 				exitTiles.put(color, (ExitTile)currTile.getNextTile());
+			} else if (position % 13 == 9) {
+				currTile.setNextTile(new ShelterTile(position));
 			} else {
 				currTile.setNextTile(new RegularTile(position, false));
 			}
@@ -268,11 +274,11 @@ public class Facade implements Observed {
 			else if (position == 51)
 				return new double[] {xAnchor - tileSize, yAnchor};
 		} else {
-			if(position < 5) {
+			if(position < 6) {
 				return new double[] {xAnchor + tileSize*position, yAnchor + tileSize};
-			} else if (position < 10) {
+			} else if (position < 12) {
 				return new double[] {xAnchor + 6*tileSize, yAnchor - 5*tileSize + (position-5)*tileSize};
-			} else if (position < 15) {
+			} else if (position < 18) {
 				return new double[] {xAnchor + 12*tileSize - tileSize*(position-10), yAnchor + tileSize};
 			} else {
 				return new double[] {xAnchor + 6 * tileSize, yAnchor + 7*tileSize - (position-15)*tileSize};
@@ -287,6 +293,17 @@ public class Facade implements Observed {
 
 	public int getNTiles() {
 		return nTiles;
+	}
+
+	public boolean getEndGame() {
+		return endGame;
+	}
+
+	public Player[] getSortedPlayers() {
+		Player[] returnValue = new Player[4];
+		System.arraycopy(players, 0, returnValue, 0, 4);
+		Arrays.sort(returnValue);
+		return returnValue;
 	}
 
 	/*
@@ -309,6 +326,7 @@ public class Facade implements Observed {
 		availablePawns = new HashSet<Pawn>();
 		canPlayAgain = false;
 		hasRolledDice = false;
+		dontRollDiceAfterSecondPlay = false;
 		updateCurrPlayer();
 	}
 	
@@ -378,6 +396,7 @@ public class Facade implements Observed {
 			} catch (PawnCapturedException e) {
 				canPlayAgain = true;
 				hasRolledDice = true;
+				dontRollDiceAfterSecondPlay = true;
 				nTiles = 6;
 				notifyObservers();
 				return 5;
@@ -396,7 +415,8 @@ public class Facade implements Observed {
 			System.out.println(" tirou 6\n");
 			currPlayer.rollSixOnDice();
 			if (currPlayer.getNStraight6() == 3) {
-				lastPlayedPawn.sendToInitial();
+				if(!lastPlayedPawn.getIsInLastTile())
+					lastPlayedPawn.sendToInitial();
 				nextPlayer();
 				notifyObservers();
 				return nTiles;
@@ -413,6 +433,33 @@ public class Facade implements Observed {
 			return nTiles;
 		} catch (BarrierFoundException e) {
 			availablePawns = e.getPawnsInBarrier();
+			System.out.println("Number of available pawns: " + availablePawns.size());
+			if (availablePawns.size() == 2) {
+				for(Pawn p : availablePawns) {
+					hasRolledDice = true;
+					play(p.getTile().getPosition());
+					return nTiles;
+				}
+			} else {
+				PawnPosition firstPosition = null;
+				PawnPosition secondPosition = null;
+				for(Pawn p : availablePawns) {
+					if(firstPosition == null) firstPosition = p.getTile().getPosition();
+					else if (!firstPosition.equals(p.getTile().getPosition())) {
+						secondPosition = p.getTile().getPosition();
+						break;
+					}
+				}
+				hasRolledDice = true;
+				if(firstPosition.closestToFinal(secondPosition, currPlayer.getColor())) {
+					play(firstPosition);
+					notifyObservers();
+					return nTiles;
+				}
+				play(secondPosition);
+				notifyObservers();
+				return nTiles;
+			}
 		}
 		hasRolledDice = true;
 		notifyObservers();
@@ -420,7 +467,6 @@ public class Facade implements Observed {
 	}
 	
 	private void play(PawnPosition selectedPawnPosition) {
-		System.out.println("Funcao play da Facade chamada");
 		if ((!hasRolledDice) && (!canPlayAgain)) {
 			//TODO: mudar isso por uma mensagem na tela
 			return;
@@ -446,6 +492,7 @@ public class Facade implements Observed {
 			}
 		}
 		if (selectedPawn == null) {
+			System.out.println("selected pawn nao existe");
 			return;
 		}
 		try {
@@ -455,20 +502,36 @@ public class Facade implements Observed {
 		} catch (PawnCapturedException e) {
 			System.out.println("A capture ocurred!");
 			canPlayAgain = true;
+			dontRollDiceAfterSecondPlay = true;
 			nTiles = 6;
 			notifyObservers();
 			return;
 		} catch (PawnInFinalTileException e) {
 			if(currPlayer.hasWon()) {
-				//TODO: substituir isso por false
+				endGame = true;
+				notifyObservers();
+				return;
 			}
+			canPlayAgain = true;
+			dontRollDiceAfterSecondPlay = true;
+			nTiles = 6;
+			try { availablePawns = currPlayer.evaluateMoves(nTiles); }
+			catch(NoMovesAvailableException e2) {
+				nextPlayer();
+			} catch(BarrierFoundException e2) {}
+			notifyObservers();
+			return;
 		}
 		lastPlayedPawn = selectedPawn;
 		if(nTiles != 6) {
 			nextPlayer();
 		} else {
-			hasRolledDice = false;
-			canPlayAgain = false;
+			if(dontRollDiceAfterSecondPlay) {
+				nextPlayer();
+			} else {
+				hasRolledDice = false;
+				canPlayAgain = false;
+			}
 		}
 		notifyObservers();
 		return;

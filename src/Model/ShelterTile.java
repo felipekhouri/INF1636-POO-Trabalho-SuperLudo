@@ -1,7 +1,14 @@
 package Model;
 
 class ShelterTile extends Tile{
-	
+
+	public ShelterTile() {
+	}
+
+	public ShelterTile(int n) {
+		super(n, false);
+	}
+
 	//Abrigo: em um abrigo, dois piões (no máximo) de cores distintas poderão estar abrigados
 	@Override
 	public boolean canAddPawn(Pawn p) {
