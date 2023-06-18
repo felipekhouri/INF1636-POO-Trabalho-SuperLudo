@@ -161,7 +161,6 @@ public class Controller implements Swing.Observer {
 				}
 			}
 			model.setLoadedGame(pawnPositions, currentPlayer, lastDiceRoll, lastPawnPosition, lastPawnColor, canPlayAgain, hasRolledDice, lastPawn);
-	
 			reader.close();
 			System.out.println("Informações carregadas com sucesso!");
 		} catch (IOException e) {

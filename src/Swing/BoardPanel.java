@@ -50,7 +50,6 @@ public class BoardPanel extends JPanel {
         drawCellsVertical(g2d,cellSize,topLeft.getMaxX(),topLeft.getMinY(), true, false, Color.RED);
         
         drawEndCellsHorizontal(g2d,cellSize,topLeft.getMinX(),topLeft.getMaxY()+cellSize,true,Color.RED);
-		System.out.println("draw 1");
 
         
         Rectangle2D.Double topRight = new Rectangle2D.Double(getWidth()-squareSize, 0, squareSize, squareSize);
@@ -61,7 +60,6 @@ public class BoardPanel extends JPanel {
 
         drawEndCellsVertical(g2d,cellSize,topRight.getMinX()-2*cellSize,topRight.getMinY(),true,Color.GREEN);
 
-		System.out.println("draw 2");
         
         Rectangle2D.Double bottomLeft = new Rectangle2D.Double(0, getHeight()-squareSize, squareSize, squareSize);
         drawRectangle(bottomLeft,g2d,Color.BLUE);
@@ -71,7 +69,6 @@ public class BoardPanel extends JPanel {
         
         drawEndCellsVertical(g2d,cellSize,bottomLeft.getMaxX()+cellSize,bottomLeft.getMinY(),false,Color.BLUE);
 
-		System.out.println("draw 3");
 
         
         Rectangle2D.Double bottomRight = new Rectangle2D.Double(getWidth()-squareSize, getHeight()-squareSize, squareSize, squareSize);
@@ -82,7 +79,6 @@ public class BoardPanel extends JPanel {
        
         drawEndCellsHorizontal(g2d,cellSize,bottomRight.getMinX(),bottomRight.getMinY()-2*cellSize,false,Color.YELLOW);
 
-		System.out.println("draw 4");
 
 
         //MARK: Draw triangles
@@ -126,7 +122,6 @@ public class BoardPanel extends JPanel {
         
 		drawAllTiles();
 
-        System.out.println("allTiles.size ->" + allTiles.size());
     }
     
      public void updateView(Object data) {
