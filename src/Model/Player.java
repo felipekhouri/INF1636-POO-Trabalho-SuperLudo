@@ -20,13 +20,6 @@ public class Player implements Comparable<Player> {
 							new Pawn(color, initialTile)
 						   };
 		exitTile = initialTile;
-		try {
-			if (this.startPawn()) {
-				System.out.println("Peao saiu com sucesso");
-			}
-		} catch (Exception e) {
-				System.out.println("Peao capturado na saida");
-		}
 	}
 	
 	public Color getColor() {

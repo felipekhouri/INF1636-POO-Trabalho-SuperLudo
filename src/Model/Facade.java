@@ -10,10 +10,17 @@ public class Facade implements Observed {
 		makeNewBoard();
 		for(Color c: Color.values()) {
 			players[i] = new Player(c, exitTiles.get(c));
+			if(c == Color.red) {
+				try {
+					players[i].startPawn();
+				} catch (Exception e) {}
+				players[i].updateFirstPlay();
+			}
 			i++;
 		}
 		currPlayer = players[0];
 		observers = new ArrayList<>();
+		updateOccupiedTiles();
 
 	}
 	
@@ -256,6 +263,17 @@ public class Facade implements Observed {
 		hasRolledDice = false;
 		dontRollDiceAfterSecondPlay = false;
 		updateCurrPlayer();
+		if (currPlayer.getIsFirstPlay()) {
+			try {
+				if (currPlayer.startPawn()) {
+					System.out.println("Peao saiu com sucesso");
+				}
+			} catch (Exception e) {
+					canPlayAgain = true;
+					nTiles = 6;
+			}
+			currPlayer.updateFirstPlay();
+		}
 	}
 	
 	//setters
@@ -506,6 +524,7 @@ public class Facade implements Observed {
 	@Override
 	public void addObserver(Swing.Observer observer) {
 	    observers.add(observer);
+		notifyObservers();
 	}
 
 	@Override
