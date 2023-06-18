@@ -44,6 +44,10 @@ public class Facade implements Observed {
 						// Obtém o valor da posição atual da lista playerPawnPositions
 						int position = playerPawnPositions.get(pawnIndex);
 	
+						if (position == -1){
+							pawnIndex++;
+							continue;
+						}
 						// Obtém o Tile correspondente à posição desejada
 						Tile tile = getTileByPosition(position);
 	
@@ -83,6 +87,7 @@ public class Facade implements Observed {
 		Tile currentTile = this.anchor;
 		while (currentTile != null) {
 			if (currentTile.getPosition().getNumber() == position) {
+				System.out.println("POSITION -> " + position);
 				return currentTile;
 			}
 			currentTile = currentTile.getNextTile();
@@ -195,6 +200,7 @@ public class Facade implements Observed {
 			auxTile = auxTile.getNextTile();
 			position++;
 		} while (auxTile != anchor);
+		System.out.println("CAI AQUI | PTPos ->" + p.getTile().getPosition().getNumber());
 		return new PawnPosition(-1, false);
 	}
 

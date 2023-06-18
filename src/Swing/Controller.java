@@ -73,6 +73,7 @@ public class Controller implements Swing.Observer {
 			writer.write("currPlayer: " + currentPlayer);
 			writer.newLine();
 			writer.write("lastDiceRoll: " + model.getNTiles());
+			System.out.println("nTiles: " + model.getNTiles());
 			writer.newLine();
 			if (model.getLastPlayedPawn() != null) {
 				writer.write("lastPlayedPawn: " + model.getLastPlayedPawn().getColor() + "," + model.getLastPlayedPawn().getTile().getPosition());
@@ -86,8 +87,13 @@ public class Controller implements Swing.Observer {
 			writer.newLine();
 			for (Player player : model.getPlayers()) {
 				for (Pawn pawn : player.getPawns()) {
-					writer.write(model.getPawnPosition(pawn).getNumber() + "/");
-					writer.write(model.getPawnPosition(pawn).getIsInFinalTiles() + ",");
+					PawnPosition pPosition = model.getPawnPosition(pawn);
+					writer.write(pPosition.getNumber() + "/");
+					writer.write(pPosition.getIsInFinalTiles() + ",");
+					if (pPosition.getNumber() == -1){
+						System.out.println("MAIS UM -1");
+
+					}
 					
 				}
 				writer.newLine();
