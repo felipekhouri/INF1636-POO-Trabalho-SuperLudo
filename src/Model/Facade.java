@@ -29,6 +29,13 @@ public class Facade implements Observed {
 		Color playerColor = Color.valueOf(currPlayer);
 		System.out.println("\n\n\nPLAYER COLOR->" + playerColor);
 		this.currPlayer = findPlayer(playerColor);
+		if (!hasRolledDice && canPlay){
+			try{
+			this.availablePawns = this.currPlayer.evaluateMoves(lastDice);
+			} catch (Exception e){
+
+			}
+		}
 		System.out.println("PLAYER COLORED ->" + findPlayer(playerColor).getColor());
 		int playerIndex = 0;
 	
