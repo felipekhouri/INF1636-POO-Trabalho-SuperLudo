@@ -60,7 +60,11 @@ public class Facade implements Observed {
 	
 						// Move o peão para o Tile desejado
 						try {
+							pawn.getTile().removePawn(pawn);
 							pawn.setTile(tile); // Use o método de movimento do seu peão
+							// pawn.setIsInInitialTile(false);
+							tile.addPawn(pawn);
+							System.out.println("PAWN: " + player.getColor() + pawn.getTile().getPosition().getNumber());
 						} catch (Exception e){
 							// Trate as exceções conforme necessário
 							e.printStackTrace();
