@@ -28,7 +28,7 @@ public class Facade implements Observed {
 	public void setLoadedGame(List<List<Integer>> pawnPositions, String currPlayer, int lastDice, int lastPawnPos,String lastPawnColor, boolean canPlay, boolean hasRolledDice, boolean lastPawn){
 		Color playerColor = Color.valueOf(currPlayer);
 		System.out.println("\n\n\nPLAYER COLOR->" + playerColor);
-		this.currPlayer = findPlayer(Color.red);
+		this.currPlayer = findPlayer(playerColor);
 		System.out.println("PLAYER COLORED ->" + findPlayer(playerColor).getColor());
 		int playerIndex = 0;
 	
