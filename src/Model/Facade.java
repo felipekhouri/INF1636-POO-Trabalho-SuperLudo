@@ -75,7 +75,7 @@ public class Facade implements Observed {
 
 	public void setLoadedGame(List<List<Integer>> pawnPositions, String currPlayer, int lastDice, 
 	int lastPawnPos,String lastPawnColor, boolean canPlay, boolean hasRolledDice, boolean lastPawn, 
-	List<List<Boolean>> pawnsInFinalTiles){
+	List<List<Boolean>> pawnsInFinalTiles, boolean dontRollDice, List<Boolean> isFirstPlayList){
 		cleanBoard();
 		Color playerColor = Color.valueOf(currPlayer);
 		System.out.println("\n\n\nPLAYER COLOR->" + playerColor);
@@ -87,6 +87,7 @@ public class Facade implements Observed {
 
 			}
 		}
+		this.dontRollDiceAfterSecondPlay = dontRollDice;
 		System.out.println("PLAYER COLORED ->" + findPlayer(playerColor).getColor());
 		int playerIndex = 0;
 	
@@ -95,7 +96,7 @@ public class Facade implements Observed {
 			if (playerIndex < pawnPositions.size()) {
 				List<Integer> playerPawnPositions = pawnPositions.get(playerIndex);
 				List<Boolean> playerPawnsIsInFinal = pawnsInFinalTiles.get(playerIndex);
-
+				player.setIsFirstPlay(isFirstPlayList.get(playerIndex));
 	
 				int pawnIndex = 0;
 				for (Pawn pawn : player.pawns) {
@@ -702,5 +703,13 @@ public class Facade implements Observed {
 
 	public boolean getHasRolledDice() {
 		return hasRolledDice;
+	}
+
+	public void setDontRollDice(boolean bool){
+		this.dontRollDiceAfterSecondPlay = bool;
+	}
+
+	public boolean getDontRollDice(){
+		return this.dontRollDiceAfterSecondPlay;
 	}
 }
