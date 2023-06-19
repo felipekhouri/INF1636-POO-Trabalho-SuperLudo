@@ -3,6 +3,38 @@ import java.util.*;
 import Swing.Observed;
 
 public class Facade implements Observed {
+
+	//implementacao de observable
+	private List<Swing.Observer> observers;
+	
+	//gerenciamento do jogador atual
+	private Player currPlayer;
+	private Player[] players;
+	//casas de saída
+	private Map<Color, ExitTile> exitTiles;
+	//número tirado no dado
+	protected int lastDiceRoll;
+	protected int nTiles;
+	//último peão que o jogador moveu
+	private Pawn lastPlayedPawn;
+	//classe random para a rolagem do dado
+	private Random rand = new Random();
+	private Scanner scanner = new Scanner(System.in);
+	//anchor é uma referência para a casa de saída vermelha. No sistema de coordenadas, é a "casa número 0" 
+	private Tile anchor;
+	//peoes que podem ser movidos
+	private Set<Pawn> availablePawns = new HashSet<Pawn>();
+	public double tileSize = 51.3;
+	//indica se o jogador atual precisa jogar novamente antes de selecionar um peao
+	private boolean canPlayAgain = false;
+	//indica se o jogador ja rolou o dado antes de jogar
+	private boolean hasRolledDice = false;
+	//indica se houve captura na ultima jogada
+	private boolean dontRollDiceAfterSecondPlay = false;
+	//indica se algu jogador ganhou ou nao o jogo
+	private boolean endGame = false;
+	//todas as tiles em que há peoes
+	private Set<Tile> occupiedTiles = new HashSet<Tile>();
 	
 	private Facade() {
 		int i = 0;
@@ -76,8 +108,10 @@ public class Facade implements Observed {
 						try {
 							pawn.getTile().removePawn(pawn);
 							pawn.setTile(tile); // Use o método de movimento do seu peão
+							pawn.setIsInInitialTile(false);
 							tile.addPawn(pawn);
 							System.out.println("PAWN: " + player.getColor() + pawn.getTile().getPosition().getNumber());
+							System.out.println("TILE: " + tile.getPosition().getNumber());
 						} catch (Exception e){
 							// Trate as exceções conforme necessário
 							e.printStackTrace();
@@ -105,6 +139,7 @@ public class Facade implements Observed {
 		// available pawns: savar cor e posicao, depois comparar com os existentes
 		this.hasRolledDice = hasRolledDice;
 		updateOccupiedTiles();
+		notifyObservers();
 	}
 
 	private Tile getTileByPosition(int position, boolean isFinal) {
@@ -145,37 +180,6 @@ public class Facade implements Observed {
 	protected static Facade getTestInstance() {
 		return new Facade();
 	}
-	//implementacao de observable
-	private List<Swing.Observer> observers;
-	
-	//gerenciamento do jogador atual
-	private Player currPlayer;
-	private Player[] players;
-	//casas de saída
-	private Map<Color, ExitTile> exitTiles;
-	//número tirado no dado
-	protected int lastDiceRoll;
-	protected int nTiles;
-	//último peão que o jogador moveu
-	private Pawn lastPlayedPawn;
-	//classe random para a rolagem do dado
-	private Random rand = new Random();
-	private Scanner scanner = new Scanner(System.in);
-	//anchor é uma referência para a casa de saída vermelha. No sistema de coordenadas, é a "casa número 0" 
-	private Tile anchor;
-	//peoes que podem ser movidos
-	private Set<Pawn> availablePawns = new HashSet<Pawn>();
-	public double tileSize = 51.3;
-	//indica se o jogador atual precisa jogar novamente antes de selecionar um peao
-	private boolean canPlayAgain = false;
-	//indica se o jogador ja rolou o dado antes de jogar
-	private boolean hasRolledDice = false;
-	//indica se houve captura na ultima jogada
-	private boolean dontRollDiceAfterSecondPlay = false;
-	//indica se algu jogador ganhou ou nao o jogo
-	private boolean endGame = false;
-	//todas as tiles em que há peoes
-	private Set<Tile> occupiedTiles = new HashSet<Tile>();
 	
 	//metodos auxiliares
 	/*
