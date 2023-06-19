@@ -1,5 +1,5 @@
-package Swing;
-import Model.*;
+package Model;
+import Controller.Controller;
 
 public class Main {
 
