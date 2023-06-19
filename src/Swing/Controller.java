@@ -76,7 +76,7 @@ public class Controller implements Swing.Observer {
 			System.out.println("nTiles: " + model.getNTiles());
 			writer.newLine();
 			if (model.getLastPlayedPawn() != null) {
-				writer.write("lastPlayedPawn: " + model.getLastPlayedPawn().getColor() + "," + model.getLastPlayedPawn().getTile().getPosition());
+				writer.write("lastPlayedPawn: " + model.getLastPlayedPawn().getColor() + "," + model.getLastPlayedPawn().getTile().getPosition().getNumber());
 				writer.newLine();
 			}
 			writer.write("canPlayAgain: " + model.getCanPlayAgain());
@@ -116,6 +116,7 @@ public class Controller implements Swing.Observer {
 			boolean hasRolledDice = true;
 			boolean lastPawn = model.getLastPlayedPawn() == null ? false : true;
 			List<List<Integer>> pawnPositions = new ArrayList<>();
+			List<List<Boolean>> pawnFinalTiles = new ArrayList<>();
 
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -130,6 +131,7 @@ public class Controller implements Swing.Observer {
 				} else if (line.startsWith("lastPlayedPawn:")) {
 					String[] pawnInfo = line.substring(line.indexOf(":") + 1).trim().split(",");
 					lastPawnColor = pawnInfo[0].trim();
+					System.out.println("pawnInfo[1].trim()"+ pawnInfo[1].trim());
 					lastPawnPosition = Integer.parseInt(pawnInfo[1].trim());
 					// Atribui o último peão jogado
 					System.out.println("Last Played Pawn: Color=" + lastPawnColor + ", Position=" + lastPawnPosition);
@@ -146,21 +148,25 @@ public class Controller implements Swing.Observer {
 					while ((line = reader.readLine()) != null && !line.isEmpty()) {
 						String[] positions = line.split(",");
 						List<Integer> pawnPositionList = new ArrayList<>();
+						List<Boolean> pawnIsInFinalTileList = new ArrayList<>();
 						for (String position : positions) {
 							String[] posInfo = position.split("/");
 							int posNumber = Integer.parseInt(posInfo[0].trim());
 							boolean isInFinalTiles = Boolean.parseBoolean(posInfo[1].trim());
 							pawnPositionList.add(posNumber);
+							pawnIsInFinalTileList.add(isInFinalTiles);
 							// Atribui a posição e a informação se está na reta final para cada peão
 							System.out.println("Pawn Position: Number=" + posNumber + ", IsInFinalTiles=" + isInFinalTiles);
 						}
 						pawnPositions.add(pawnPositionList);
+						pawnFinalTiles.add(pawnIsInFinalTileList);
 					}
 					// Atribui as posições dos peões
 					System.out.println("Pawn Positions: " + pawnPositions);
+					System.out.println("\n\n\nPawn FINAL TILES: " + pawnFinalTiles);
 				}
 			}
-			model.setLoadedGame(pawnPositions, currentPlayer, lastDiceRoll, lastPawnPosition, lastPawnColor, canPlayAgain, hasRolledDice, lastPawn);
+			model.setLoadedGame(pawnPositions, currentPlayer, lastDiceRoll, lastPawnPosition, lastPawnColor, canPlayAgain, hasRolledDice, lastPawn, pawnFinalTiles);
 			reader.close();
 			System.out.println("Informações carregadas com sucesso!");
 		} catch (IOException e) {
