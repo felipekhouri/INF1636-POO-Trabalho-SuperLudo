@@ -14,6 +14,7 @@ public class Pawn {
 	protected void move(int nTiles) 
 	throws PawnInFinalTileException, PawnCapturedException, MoveImpossibleException 
 	{	
+		System.out.println("move");
 		Tile auxTile = currTile;
 		int tilesMoved = 0;
 		PawnCapturedException pawnCaptured = null;
@@ -53,7 +54,6 @@ public class Pawn {
 		if(currTile instanceof FinalTile) {
 			FinalTile finalTile = (FinalTile)currTile;
 			if (finalTile.isLastTile()) {
-				isInLastTile = true;
 				throw new PawnInFinalTileException(); //se o jogador está na casa final, lançamos esta exceção avisando
 			}
 		}
@@ -94,7 +94,10 @@ public class Pawn {
 
 	public boolean getIsInLastTile() 
 	{
-		return isInLastTile;
+		if(currTile instanceof FinalTile) {
+			return ((FinalTile)currTile).isLastTile();
+		}
+		return false;
 	}
 
 	public void sendToInitial() {

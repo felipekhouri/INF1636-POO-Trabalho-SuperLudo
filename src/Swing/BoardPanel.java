@@ -134,15 +134,15 @@ public class BoardPanel extends JPanel {
 			}
     		else if(tileRep.type == TileType.single) {
 				System.out.println("tileRep.type == TileType.single");
-    			drawPawn(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1],g2d);
+    			drawPawn(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1], g2d, 51.3);
     		}
     		else if(tileRep.type == TileType.twoDifferentColor) {
 				System.out.println("tileRep.type == TileType.twoDifferentColor");
-    			drawExitDoublePawn(tileRep.pawns[0],tileRep.pawns[1],tileRep.positionXY[0], tileRep.positionXY[1], g2d);
+    			drawExitDoublePawn(tileRep.pawns[0],tileRep.pawns[1],tileRep.positionXY[0], tileRep.positionXY[1], g2d, 51.3);
     		}
     		else {
 				System.out.println("tileRep.type == TileType.twoDifferentColor");
-    			drawBarrier(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1],g2d);
+    			drawBarrier(tileRep.pawns[0],tileRep.positionXY[0],tileRep.positionXY[1],g2d, 51.3);
     		}
     		
     	// }
@@ -183,19 +183,19 @@ public class BoardPanel extends JPanel {
 //	}
     
     //drawers
-    private Ellipse2D.Double drawPawn(Color pawnColor, double posX, double posY, Graphics2D g2d) {
+    private Ellipse2D.Double drawPawn(Color pawnColor, double posX, double posY, Graphics2D g2d, double tileSize) {
    	 	double circleSize = 25;
    	 	double panelWidth = posX;
    	 	double panelHeight = posY;
    	 	
         
-        Ellipse2D.Double pawn = new Ellipse2D.Double(posX,posY,circleSize,circleSize);
+        Ellipse2D.Double pawn = new Ellipse2D.Double(posX + tileSize/4, posY + tileSize/4, circleSize, circleSize);
 
         drawCircle(pawn,g2d, Color.BLACK, pawnColor);
         return pawn;
    }
  
-    private void drawExitDoublePawn(Color exitTilePawnColor, Color otherPawnColor, double posX, double posY, Graphics2D g2d) {
+    private void drawExitDoublePawn(Color exitTilePawnColor, Color otherPawnColor, double posX, double posY, Graphics2D g2d, double tileSize) {
    	 	double circleSize = 25;
    	 	double panelWidth = posX;
    	 	double panelHeight = posY;
@@ -207,14 +207,14 @@ public class BoardPanel extends JPanel {
         double smallerX = (panelWidth - smallerCircleSize/2);
         double smallerY = (panelHeight - smallerCircleSize/2);
         
-        Ellipse2D.Double backPawn = new Ellipse2D.Double(largerX,largerY,circleSize*1.5,circleSize*1.5);
-        Ellipse2D.Double frontPawn = new Ellipse2D.Double(smallerX,smallerY,circleSize*1.2,circleSize*1.2);
+        Ellipse2D.Double backPawn = new Ellipse2D.Double(largerX + tileSize/2, largerY + tileSize/2,circleSize*1.5,circleSize*1.5);
+        Ellipse2D.Double frontPawn = new Ellipse2D.Double(smallerX + tileSize/2, smallerY + tileSize/2,circleSize*1.2,circleSize*1.2);
 
         drawCircle(backPawn,g2d, Color.BLACK, exitTilePawnColor);
         drawCircle(frontPawn,g2d, otherPawnColor, otherPawnColor);
    }
     
-    private void drawBarrier(Color pawnColor, double posX, double posY, Graphics2D g2d) {
+    private void drawBarrier(Color pawnColor, double posX, double posY, Graphics2D g2d, double tileSize) {
     	 double circleSize = 25;
     	 double panelWidth = posX;
     	 double panelHeight = posY;
@@ -226,8 +226,8 @@ public class BoardPanel extends JPanel {
          double smallerX = (panelWidth - smallerCircleSize/2.0);
          double smallerY = (panelHeight - smallerCircleSize/2.0);
          
-         Ellipse2D.Double backPawn = new Ellipse2D.Double(largerX,largerY,circleSize*1.5,circleSize*1.5);
-         Ellipse2D.Double frontPawn = new Ellipse2D.Double(smallerX,smallerY,circleSize*1.2,circleSize*1.2);
+         Ellipse2D.Double backPawn = new Ellipse2D.Double(largerX + tileSize/2, largerY + tileSize/2,circleSize*1.5,circleSize*1.5);
+         Ellipse2D.Double frontPawn = new Ellipse2D.Double(smallerX + tileSize/2, smallerY + tileSize/2,circleSize*1.2,circleSize*1.2);
 
          drawCircle(backPawn,g2d, pawnColor, Color.WHITE);
          drawCircle(frontPawn,g2d, pawnColor, pawnColor);
@@ -428,13 +428,13 @@ public class BoardPanel extends JPanel {
 			color = representation.getColor();
 			switch (representation.getType()) {
 				case twoSameColor:
-				drawBarrier(color[0], x, y, g2d);
+				drawBarrier(color[0], x, y, g2d, 51.3);
 				break;
 				case twoDifferentColor:
-				drawExitDoublePawn(color[0], color[1], x, y, g2d);
+				drawExitDoublePawn(color[0], color[1], x, y, g2d, 51.3);
 				break;
 				case single:
-				drawPawn(color[0], x, y, g2d);
+				drawPawn(color[0], x, y, g2d, 51.3);
 				break;
 				default:
 				continue;

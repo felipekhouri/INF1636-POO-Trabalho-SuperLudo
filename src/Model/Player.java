@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 
-public class Player {
+public class Player implements Comparable<Player> {
 	Pawn[] pawns;
 	private Color color;
 	private ExitTile exitTile;
@@ -20,13 +20,6 @@ public class Player {
 							new Pawn(color, initialTile)
 						   };
 		exitTile = initialTile;
-		try {
-			if (this.startPawn()) {
-				System.out.println("Peao saiu com sucesso");
-			}
-		} catch (Exception e) {
-				System.out.println("Peao capturado na saida");
-		}
 	}
 	
 	public Color getColor() {
@@ -47,6 +40,14 @@ public class Player {
 
 	public Pawn[] getPawns(){
 		return pawns;
+	}
+
+	public int getDistanceToEnd() {
+		int distance = 0;
+		for(Pawn p : pawns) {
+			distance += p.getTile().getPosition().getDistanceToFinal(color);
+		}
+		return distance;
 	}
 	
 	public Set<Pawn> evaluateMoves(int nTiles)
@@ -140,5 +141,15 @@ public class Player {
 			if (p.getIsInInitialTile()) i++;
 		}
 		return i;
+	}
+
+	//conforming to Comparable
+	@Override
+	public int compareTo(Player p) {
+		int d1, d2;
+		d1 = this.getDistanceToEnd(); d2 = p.getDistanceToEnd();
+		if (d1 == d2) return 0;
+		if (d1 > d2) return 1;
+		return -1;
 	}
 }
