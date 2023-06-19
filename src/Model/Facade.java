@@ -462,7 +462,7 @@ public class Facade implements Observed {
 		}
 		System.out.println("O jogador ");
 		printColor(currPlayer.getColor());
-		System.out.println("tirou %d no dado" + nTiles);
+		System.out.println("tirou " + nTiles + " no dado");
 		boolean wasAbleToStartPawn = false;
 		
 		if (nTiles == 5) {
@@ -498,6 +498,12 @@ public class Facade implements Observed {
 			} else {
 				System.out.println("Pode jogar novamente");
 			}
+		}
+
+		if(nTiles == 0) {
+			nextPlayer();
+			notifyObservers();
+			return 1;
 		}
 		
 		try {
@@ -711,5 +717,9 @@ public class Facade implements Observed {
 
 	public boolean getDontRollDice(){
 		return this.dontRollDiceAfterSecondPlay;
+	}
+
+	public void setEndGame(boolean endGame) {
+		this.endGame = endGame;
 	}
 }

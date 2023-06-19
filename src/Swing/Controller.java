@@ -362,6 +362,7 @@ public class Controller implements Swing.Observer {
         JOptionPane.showMessageDialog(null, "1o lugar: "+p1 + "\n2o lugar: " + p2 + "\n3o lugar: " + p3 + "\n4o lugar: " + p4);
         int choice = JOptionPane.showConfirmDialog(null, "Deseja começar um novo jogo?", "", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
+			model.setEndGame(false);
             reset();
         } 
         else {
