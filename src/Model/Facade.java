@@ -32,10 +32,20 @@ public class Facade implements Observed {
 		return instance;
 	}
 
-	public void setLoadedGame(List<List<Integer>> pawnPositions, String currPlayer, int lastDice, int lastPawnPos,String lastPawnColor, boolean canPlay, boolean hasRolledDice, boolean lastPawn){
+	public void setLoadedGame(List<List<Integer>> pawnPositions, String currPlayer, int lastDice, 
+	int lastPawnPos,String lastPawnColor, boolean canPlay, boolean hasRolledDice, boolean lastPawn, 
+	List<List<Boolean>> pawnsInFinalTiles){
+
 		Color playerColor = Color.valueOf(currPlayer);
 		System.out.println("\n\n\nPLAYER COLOR->" + playerColor);
 		this.currPlayer = findPlayer(playerColor);
+		if (!hasRolledDice && canPlay){
+			try{
+			this.availablePawns = this.currPlayer.evaluateMoves(lastDice);
+			} catch (Exception e){
+
+			}
+		}
 		System.out.println("PLAYER COLORED ->" + findPlayer(playerColor).getColor());
 		int playerIndex = 0;
 	
@@ -43,6 +53,8 @@ public class Facade implements Observed {
 			// Verifica se ainda existem valores na lista pawnPositions
 			if (playerIndex < pawnPositions.size()) {
 				List<Integer> playerPawnPositions = pawnPositions.get(playerIndex);
+				List<Boolean> playerPawnsIsInFinal = pawnsInFinalTiles.get(playerIndex);
+
 	
 				int pawnIndex = 0;
 				for (Pawn pawn : player.pawns) {
@@ -50,17 +62,22 @@ public class Facade implements Observed {
 					if (pawnIndex < playerPawnPositions.size()) {
 						// Obtém o valor da posição atual da lista playerPawnPositions
 						int position = playerPawnPositions.get(pawnIndex);
+						boolean isInFinal = playerPawnsIsInFinal.get(pawnIndex);
 	
 						if (position == -1){
 							pawnIndex++;
 							continue;
 						}
 						// Obtém o Tile correspondente à posição desejada
-						Tile tile = getTileByPosition(position);
+						// System.out.println("POS -> " + position + " | isInFinal -> " + isInFinal);
+						Tile tile = getTileByPosition(position, isInFinal);
 	
 						// Move o peão para o Tile desejado
 						try {
+							pawn.getTile().removePawn(pawn);
 							pawn.setTile(tile); // Use o método de movimento do seu peão
+							tile.addPawn(pawn);
+							System.out.println("PAWN: " + player.getColor() + pawn.getTile().getPosition().getNumber());
 						} catch (Exception e){
 							// Trate as exceções conforme necessário
 							e.printStackTrace();
@@ -90,16 +107,38 @@ public class Facade implements Observed {
 		updateOccupiedTiles();
 	}
 
-	private Tile getTileByPosition(int position) {
-		Tile currentTile = this.anchor;
-		while (currentTile != null) {
-			if (currentTile.getPosition().getNumber() == position) {
-				System.out.println("POSITION -> " + position);
-				return currentTile;
+	private Tile getTileByPosition(int position, boolean isFinal) {
+		if (!isFinal) {
+			Tile currentTile = this.anchor;
+			// while (currentTile != null) {
+			// 	if (currentTile.getPosition().getNumber() == position) {
+			// 		System.out.println("POSITION -> " + position);
+			// 		return currentTile;
+			// 	}
+			// 	currentTile = currentTile.getNextTile();
+			// }
+			for (int i = 0; i < position; i++) {
+				currentTile = currentTile.getNextTile();
 			}
-			currentTile = currentTile.getNextTile();
+			return currentTile;
+			// return null; // Retorne null se o Tile não for encontrado
+		} else {
+			Color finalTileColor = finalTilesColor(position);
+			Tile currentTile = FinalTile.finalTiles.get(finalTileColor); // inicio dos finalTiles 
+			
+			for (int i = 0; i < position % 6; i++) {
+				currentTile = currentTile.getNextTile();
+			}
+			System.out.printf("====================\nPosition: %d | curentTile Position: ", position, currentTile.getPosition().getNumber());
+			return currentTile;
 		}
-		return null; // Retorne null se o Tile não for encontrado
+	}
+
+	private Color finalTilesColor(int position) {
+		if (position < 6) return Color.red;
+		else if (position < 12) return Color.green;
+		else if (position < 18) return Color.yellow;
+		else return Color.blue;
 	}
 
 	//não queremos usar o singleton em testes
