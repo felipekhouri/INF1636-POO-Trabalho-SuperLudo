@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import Model.*;
+
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import java.io.*;
 
@@ -39,6 +41,30 @@ public class Controller implements Swing.Observer {
 		view.setTitle("Minha Primeira GUI"); 
 		view.setVisible(true);
 		view.setSize(1000, 800);
+
+		view.getSaveButton().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				int resultado = fileChooser.showSaveDialog(null);
+				if (resultado == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					saveInfo(file);
+				}
+				
+			}
+		});
+		view.getLoadButton().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				int resultado = fileChooser.showOpenDialog(null);
+				if (resultado == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					loadInfo(file);
+				}
+			}
+		});
 
 	}
 
