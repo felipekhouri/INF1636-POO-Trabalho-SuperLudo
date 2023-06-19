@@ -65,7 +65,12 @@ public class Controller implements Swing.Observer {
 				}
 			}
 		});
-
+		view.getNewGameButton().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				reset();
+			}
+		});
 	}
 
 	private void saveInfo(File file) {
@@ -175,8 +180,10 @@ public class Controller implements Swing.Observer {
 		}
 	}
 	
-	
-	
+	public void reset() {
+		File blankGameFile = new File("Swing/blankGame.txt");
+		loadInfo(blankGameFile);
+	}
 
 	private class DiceListener implements ActionListener {
 
@@ -344,13 +351,13 @@ public class Controller implements Swing.Observer {
         JOptionPane.showMessageDialog(null, "1o lugar: "+p1 + "\n2o lugar: " + p2 + "\n3o lugar: " + p3 + "\n4o lugar: " + p4);
         int choice = JOptionPane.showConfirmDialog(null, "Deseja começar um novo jogo?", "", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
-            //chama função reset da façade e repaint a view
-            System.out.println("Novo jogo");
+            reset();
         } 
         else {
             System.exit(1);
         }
     }
+
 			
 		
 

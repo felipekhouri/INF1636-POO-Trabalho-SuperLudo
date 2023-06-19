@@ -61,5 +61,4 @@ class ExitTile extends Tile{
 			throw new MoveImpossibleException(/*"Cannot add pawn to exit tile."*/);
 		}
 	}
-
 }

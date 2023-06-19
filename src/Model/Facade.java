@@ -64,10 +64,19 @@ public class Facade implements Observed {
 		return instance;
 	}
 
+	//removes every pawn from the associated tile
+	private void cleanBoard() {
+		for (Player player : players) {
+			for(Pawn pawn : player.getPawns()) {
+				pawn.getTile().removePawn(pawn);
+			}
+		}
+	}
+
 	public void setLoadedGame(List<List<Integer>> pawnPositions, String currPlayer, int lastDice, 
 	int lastPawnPos,String lastPawnColor, boolean canPlay, boolean hasRolledDice, boolean lastPawn, 
 	List<List<Boolean>> pawnsInFinalTiles){
-
+		cleanBoard();
 		Color playerColor = Color.valueOf(currPlayer);
 		System.out.println("\n\n\nPLAYER COLOR->" + playerColor);
 		this.currPlayer = findPlayer(playerColor);
@@ -96,7 +105,11 @@ public class Facade implements Observed {
 						int position = playerPawnPositions.get(pawnIndex);
 						boolean isInFinal = playerPawnsIsInFinal.get(pawnIndex);
 	
-						if (position == -1){
+						if (position == -1) {
+							if(!pawn.getIsInInitialTile()) {
+								pawn.setTile(exitTiles.get(player.getColor()));
+								pawn.setIsInInitialTile(true);
+							}
 							pawnIndex++;
 							continue;
 						}
@@ -106,7 +119,7 @@ public class Facade implements Observed {
 	
 						// Move o peão para o Tile desejado
 						try {
-							pawn.getTile().removePawn(pawn);
+							// pawn.getTile().removePawn(pawn);
 							pawn.setTile(tile); // Use o método de movimento do seu peão
 							pawn.setIsInInitialTile(false);
 							tile.addPawn(pawn);

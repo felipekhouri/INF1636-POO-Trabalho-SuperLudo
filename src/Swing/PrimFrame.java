@@ -108,6 +108,10 @@ public class PrimFrame extends JFrame {
 		return button2;
 	}
 
+	public JButton getNewGameButton() {
+		return button1;
+	}
+
 //	public static void main(String[] args) {
 //		PrimFrame gui = new PrimFrame();
 //		gui.setVisible(true);
