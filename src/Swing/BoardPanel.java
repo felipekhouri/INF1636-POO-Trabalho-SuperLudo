@@ -166,7 +166,7 @@ public class BoardPanel extends JPanel {
 	}
 
 	//setters
-	void setTileRepresentations(Set<TileRepresentation> newTileRepresentations) {
+	public void setTileRepresentations(Set<TileRepresentation> newTileRepresentations) {
 		tileRepresentations = newTileRepresentations;
 	}
 	

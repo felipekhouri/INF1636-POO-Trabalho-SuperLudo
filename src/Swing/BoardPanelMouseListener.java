@@ -4,14 +4,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Set;
+
+import Controller.Controller;
+
 import java.awt.Color;
 
 // implementar o clique no tile ao invés do pawn
 public class BoardPanelMouseListener extends MouseAdapter {
     private Controller controller;
 
-    public BoardPanelMouseListener(Controller controller) {
-        this.controller = controller;
+    public BoardPanelMouseListener(Controller controller2) {
+        this.controller = controller2;
     }
 
     @Override
