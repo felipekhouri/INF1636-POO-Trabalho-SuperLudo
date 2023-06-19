@@ -84,9 +84,12 @@ public class Controller implements Swing.Observer {
 			writer.newLine();
 			writer.write("hasRolledDice: " + model.getHasRolledDice());
 			writer.newLine();
+			writer.write("DontRollDice:" + model.getDontRollDice());
+			writer.newLine();
 			writer.write("Pawn Positions:");
 			writer.newLine();
 			for (Player player : model.getPlayers()) {
+				writer.write(player.getIsFirstPlay() + "|");
 				for (Pawn pawn : player.getPawns()) {
 					PawnPosition pPosition = model.getPawnPosition(pawn);
 					writer.write(pPosition.getNumber() + "/");
@@ -115,9 +118,11 @@ public class Controller implements Swing.Observer {
 			int lastPawnPosition = 0;
 			boolean canPlayAgain = false;
 			boolean hasRolledDice = true;
+			boolean dontRollDice = false;
 			boolean lastPawn = model.getLastPlayedPawn() == null ? false : true;
 			List<List<Integer>> pawnPositions = new ArrayList<>();
 			List<List<Boolean>> pawnFinalTiles = new ArrayList<>();
+			List<Boolean> isFirstPlayList = new ArrayList<>();
 
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -144,12 +149,18 @@ public class Controller implements Swing.Observer {
 					hasRolledDice = Boolean.parseBoolean(line.substring(line.indexOf(":") + 1).trim());
 					// Atribui a informação se já lançou o dado
 					System.out.println("Has Rolled Dice: " + hasRolledDice);
+				}else if (line.startsWith("DontRollDice:")){
+					dontRollDice = Boolean.parseBoolean(line.substring(line.indexOf(":") + 1).trim());
 				} else if (line.equals("Pawn Positions:")) {
 					// Leitura das posições dos peões
 					while ((line = reader.readLine()) != null && !line.isEmpty()) {
-						String[] positions = line.split(",");
+						String[] values = line.split("\\|");
+						System.out.println("\n\n\nVALUES: " + values[0]);
+						String[] positions = values[1].split(",");
+						System.out.println("POSITIONS: " + positions);
 						List<Integer> pawnPositionList = new ArrayList<>();
 						List<Boolean> pawnIsInFinalTileList = new ArrayList<>();
+						isFirstPlayList.add(Boolean.parseBoolean(values[0]));
 						for (String position : positions) {
 							String[] posInfo = position.split("/");
 							int posNumber = Integer.parseInt(posInfo[0].trim());
@@ -167,7 +178,7 @@ public class Controller implements Swing.Observer {
 					System.out.println("\n\n\nPawn FINAL TILES: " + pawnFinalTiles);
 				}
 			}
-			model.setLoadedGame(pawnPositions, currentPlayer, lastDiceRoll, lastPawnPosition, lastPawnColor, canPlayAgain, hasRolledDice, lastPawn, pawnFinalTiles);
+			model.setLoadedGame(pawnPositions, currentPlayer, lastDiceRoll, lastPawnPosition, lastPawnColor, canPlayAgain, hasRolledDice, lastPawn, pawnFinalTiles, dontRollDice, isFirstPlayList);
 			reader.close();
 			System.out.println("Informações carregadas com sucesso!");
 		} catch (IOException e) {
